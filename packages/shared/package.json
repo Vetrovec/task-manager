@@ -1,0 +1,8 @@
+{
+  "name": "@task-manager/shared",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "format": "prettier --write \"src/**/*.{ts}\""
+  }
+}

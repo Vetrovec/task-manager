@@ -1,0 +1,22 @@
+const http = require("http"),
+  httpProxy = require("http-proxy");
+
+const proxy = httpProxy.createProxyServer({});
+
+function getTarget(req) {
+  if (req.url.startsWith("/api")) {
+    return "http://localhost:3001";
+  }
+  return "http://localhost:3002";
+}
+
+function handler(req, res) {
+  proxy.web(req, res, {
+    target: getTarget(req),
+  });
+}
+
+const server = http.createServer(handler);
+server.listen(3000, () => {
+  console.log("Proxy listening on port 3000");
+});
