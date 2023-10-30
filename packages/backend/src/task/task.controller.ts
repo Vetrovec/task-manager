@@ -6,11 +6,11 @@ import {
   Put,
   Post,
   Delete,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { CreateTaskDto } from "./dtos/CreateTask.dto";
 import { TaskService } from "./task.service";
 import { UpdateTaskDto } from "./dtos/UpdateTask.dto";
-import { ParseIntPipe } from "@nestjs/common";
 
 @Controller("task")
 export class TaskController {
