@@ -8,9 +8,9 @@ import {
   Delete,
   ParseIntPipe,
 } from "@nestjs/common";
-import { CreateTaskDto } from "./dtos/CreateTask.dto";
+import { CreateTaskDto } from "./dtos/task/CreateTask.dto";
 import { TaskService } from "./task.service";
-import { UpdateTaskDto } from "./dtos/UpdateTask.dto";
+import { UpdateTaskDto } from "./dtos/task/UpdateTask.dto";
 
 @Controller("task")
 export class TaskController {

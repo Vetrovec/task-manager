@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Workspace } from "./Workspace";
 
 @Entity()
 export class Task {
@@ -16,4 +17,7 @@ export class Task {
 
   @Column({ default: "OPEN" })
   status: string;
+
+  @ManyToOne(() => Workspace, (workspace) => workspace.tasks)
+  workspace: Workspace;
 }
