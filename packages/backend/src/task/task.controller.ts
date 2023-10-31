@@ -43,7 +43,7 @@ export class TaskController {
 
   @Delete(":id")
   deleteTask(@Param("id", ParseIntPipe) id: number) {
-    this.taskService.deleteTask(id);
-    return `Task with id ${id} has been deleted`;
+    const deleteTaskMessage = this.taskService.deleteTask(id);
+    return deleteTaskMessage;
   }
 }

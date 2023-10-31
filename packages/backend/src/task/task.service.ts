@@ -35,6 +35,13 @@ export class TaskService {
 
   //delete task
   async deleteTask(id: number) {
-    await this.taskRepository.delete(id);
+    const task = await this.taskRepository.find({ where: { id } });
+    const status = task[0].status;
+    if (status == "open") {
+      return `Task with id ${id} is open and cannot be deleted`;
+    } else {
+      await this.taskRepository.delete(id);
+      return `Task with id ${id} has been deleted`;
+    }
   }
 }
