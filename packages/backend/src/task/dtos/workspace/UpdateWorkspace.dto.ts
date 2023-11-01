@@ -1,4 +1,11 @@
+import { IsString, IsOptional } from "class-validator";
+
 export class UpdateWorkspaceDto {
-  name: string;
-  description: string;
+  @IsString()
+  @IsOptional() // Make the 'name' field optional
+  name?: string;
+
+  @IsString()
+  @IsOptional() // Make the 'description' field optional
+  description?: string;
 }
