@@ -4,7 +4,7 @@ import { AppService } from "./app.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { TaskModule } from "./task/task.module";
-import { Task } from "./entities/task.entity";
+import { join } from "path";
 
 @Module({
   imports: [
@@ -16,8 +16,7 @@ import { Task } from "./entities/task.entity";
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Task],
-      // entities: [__dirname + "src/entities/*.entity{.ts,.js}"],
+      entities: [join(__dirname, "./**/*.entity{.ts,.js}")],
 
       synchronize: true,
     }),
