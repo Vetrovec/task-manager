@@ -10,30 +10,25 @@ export class TaskService {
     @InjectRepository(Task) private taskRepository: Repository<Task>,
   ) {}
 
-  //get all tasks
   findTasks() {
     return this.taskRepository.find();
   }
 
-  //get task by id
   findTaskById(id: number) {
     return this.taskRepository.find({ where: { id } });
   }
 
-  //create task
   async createTask(taskDetails: CreateTaskParams) {
     const newTask = this.taskRepository.create(taskDetails);
     await this.taskRepository.save(newTask);
     return newTask;
   }
 
-  //update task
   async updateTask(id: number, updateTask: UpdateTaskParams) {
     await this.taskRepository.update(id, updateTask);
     return this.taskRepository.find({ where: { id } });
   }
 
-  //delete task
   async deleteTask(id: number) {
     const task = await this.taskRepository.find({ where: { id } });
     const status = task[0].status;
