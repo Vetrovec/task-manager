@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CreateWorkspaceParams, UpdateWorkspaceParams } from "src/utils/types";
-import { Workspace } from "src/typeorm/entities/Workspace";
+import { Workspace } from "src/entities/workspace.entity";
 import { Repository } from "typeorm";
 
 @Injectable()
