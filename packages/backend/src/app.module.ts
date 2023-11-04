@@ -2,23 +2,27 @@ import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TaskModule } from "./task/task.module";
 import { join } from "path";
+import appConfig from "./config/app.config";
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({
-      type: "mysql",
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT as unknown as number,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      entities: [join(__dirname, "./**/*.entity{.ts,.js}")],
-
-      synchronize: true,
+    ConfigModule.forRoot({ isGlobal: true, load: [appConfig] }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: "mysql",
+        host: configService.getOrThrow("db.host"),
+        port: configService.getOrThrow("db.port"),
+        username: configService.getOrThrow("db.username"),
+        password: configService.getOrThrow("db.password"),
+        database: configService.getOrThrow("db.database"),
+        entities: [join(__dirname, "./**/*.entity{.ts,.js}")],
+        synchronize: true,
+      }),
+      inject: [ConfigService],
     }),
     TaskModule,
   ],
