@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Task } from "src/typeorm/entities/Task";
 import { Repository } from "typeorm";
-import { CreateTaskParams, UpdateTaskParams } from "./utils/types";
+import { CreateTaskParams, UpdateTaskParams } from "../utils/types";
 
 @Injectable()
 export class TaskService {

@@ -9,8 +9,8 @@ import {
   ParseIntPipe,
 } from "@nestjs/common";
 import { WorkspaceService } from "./workspace.service";
-import { CreateWorkspaceDto } from "src/task/dtos/workspace/CreateWorkspace.dto";
-import { UpdateWorkspaceDto } from "src/task/dtos/workspace/UpdateWorkspace.dto";
+import { CreateWorkspaceDto } from "src/dtos/workspace/CreateWorkspace.dto";
+import { UpdateWorkspaceDto } from "src/dtos/workspace/UpdateWorkspace.dto";
 
 @Controller("workspace")
 export class WorkspaceController {

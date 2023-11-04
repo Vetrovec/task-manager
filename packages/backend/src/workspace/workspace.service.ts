@@ -1,9 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import {
-  CreateWorkspaceParams,
-  UpdateWorkspaceParams,
-} from "src/task/utils/types";
+import { CreateWorkspaceParams, UpdateWorkspaceParams } from "src/utils/types";
 import { Workspace } from "src/typeorm/entities/Workspace";
 import { Repository } from "typeorm";
 
