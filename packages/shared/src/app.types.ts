@@ -1,3 +1,3 @@
-export type GetStatusResponse = {
+export type IGetStatusResponse = {
   status: string;
 };

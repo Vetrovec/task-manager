@@ -3,12 +3,13 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TaskModule } from "./task/task.module";
+import { join } from "path";
 import appConfig from "./config/app.config";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [appConfig] }),
-
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -18,13 +19,13 @@ import appConfig from "./config/app.config";
         username: configService.getOrThrow("db.username"),
         password: configService.getOrThrow("db.password"),
         database: configService.getOrThrow("db.database"),
-        entities: [],
+        entities: [join(__dirname, "./**/*.entity{.ts,.js}")],
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
+    TaskModule,
   ],
-
   controllers: [AppController],
   providers: [AppService],
 })
