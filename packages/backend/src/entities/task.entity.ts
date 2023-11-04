@@ -1,7 +1,8 @@
+import { ITask } from "@task-manager/shared";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Task {
+export class Task implements ITask {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,6 +15,6 @@ export class Task {
   @Column()
   price: number;
 
-  @Column({ default: "OPEN" })
-  status: string;
+  @Column({ default: "open" })
+  status: "open" | "closed";
 }

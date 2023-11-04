@@ -1,7 +1,7 @@
-import { UpdateTask } from "@task-manager/shared";
+import { IUpdateTaskRequest } from "@task-manager/shared";
 import { IsString, IsNumber, IsIn, IsOptional } from "class-validator";
 
-export class UpdateTaskDto implements UpdateTask {
+export class UpdateTaskDto implements IUpdateTaskRequest {
   @IsString()
   @IsOptional()
   name: string;

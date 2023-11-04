@@ -6,45 +6,88 @@ import {
   Put,
   Post,
   Delete,
+  HttpException,
+  HttpStatus,
   ParseIntPipe,
 } from "@nestjs/common";
-
+import {
+  ICreateTaskResponse,
+  IDeleteTaskResponse,
+  IFindAllTasksResponse,
+  IFindOneTaskResponse,
+  IUpdateTaskResponse,
+} from "@task-manager/shared";
 import { TaskService } from "./task.service";
-import { CreateTaskDto } from "src/dtos/task/CreateTask.dto";
-import { UpdateTaskDto } from "src/dtos/task/UpdateTask.dto";
+import { CreateTaskDto } from "./dtos/CreateTask.dto";
+import { UpdateTaskDto } from "./dtos/UpdateTask.dto";
 
 @Controller("task")
 export class TaskController {
   constructor(private taskService: TaskService) {}
 
   @Get()
-  getTasks() {
-    return this.taskService.findTasks();
+  async findAllTasks(): Promise<IFindAllTasksResponse> {
+    const tasks = await this.taskService.findTasks();
+    return {
+      tasks,
+    };
   }
 
   @Get(":id")
-  findTaskById(@Param("id", ParseIntPipe) id: number) {
-    return this.taskService.findTaskById(id);
+  async findOneTask(
+    @Param("id", ParseIntPipe) id: number,
+  ): Promise<IFindOneTaskResponse> {
+    const task = await this.taskService.findTaskById(id);
+    if (!task) {
+      throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
+    }
+    return {
+      task,
+    };
   }
 
   @Post()
-  createTask(@Body() createTaskDto: CreateTaskDto) {
-    const newTask = this.taskService.createTask(createTaskDto);
-    return newTask;
+  async createTask(
+    @Body() createTaskRequest: CreateTaskDto,
+  ): Promise<ICreateTaskResponse> {
+    const createdTask = await this.taskService.createTask(createTaskRequest);
+    return {
+      task: createdTask,
+    };
   }
 
   @Put(":id")
-  updateTask(
+  async updateTask(
     @Param("id", ParseIntPipe) id: number,
-    @Body() updateTaskDto: UpdateTaskDto,
-  ) {
-    const updatedTask = this.taskService.updateTask(id, updateTaskDto);
-    return updatedTask;
+    @Body() updateTaskRequest: UpdateTaskDto,
+  ): Promise<IUpdateTaskResponse> {
+    const updatedTask = await this.taskService.updateTask(
+      id,
+      updateTaskRequest,
+    );
+    if (!updatedTask) {
+      throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
+    }
+    return {
+      task: updatedTask,
+    };
   }
 
   @Delete(":id")
-  deleteTask(@Param("id", ParseIntPipe) id: number) {
-    const deleteTaskMessage = this.taskService.deleteTask(id);
-    return deleteTaskMessage;
+  async deleteTask(
+    @Param("id", ParseIntPipe) id: number,
+  ): Promise<IDeleteTaskResponse> {
+    const deleteTaskResult = await this.taskService.deleteTask(id);
+    // TODO: Provide correct reasons for failure
+    if (!deleteTaskResult) {
+      return {
+        success: false,
+        message: `Task with id ${id} is open and cannot be deleted`,
+      };
+    }
+    return {
+      success: deleteTaskResult,
+      message: `Task with id ${id} has been deleted`,
+    };
   }
 }
