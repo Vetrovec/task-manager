@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { WorkspaceController } from "./workspace.controller";
 import { WorkspaceService } from "./workspace.service";
-import { Workspace } from "src/typeorm/entities/Workspace";
+import { Workspace } from "src/entities/workspace.entity";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Workspace])],

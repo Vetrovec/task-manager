@@ -4,7 +4,7 @@ import {
   CreateWorkspaceParams,
   UpdateWorkspaceParams,
 } from "src/task/utils/types";
-import { Workspace } from "src/typeorm/entities/Workspace";
+import { Workspace } from "src/entities/workspace.entity";
 import { Repository } from "typeorm";
 
 @Injectable()

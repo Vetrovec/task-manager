@@ -3,9 +3,9 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
-import { Task } from "./typeorm/entities/Task";
+import { Task } from "./entities/task.entity";
 import { TaskModule } from "./task/task.module";
-import { Workspace } from "./typeorm/entities/Workspace";
+import { Workspace } from "./entities/workspace.entity";
 import { WorkspaceModule } from "./workspace/workspace.module";
 
 @Module({

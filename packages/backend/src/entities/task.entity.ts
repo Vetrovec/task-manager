@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Workspace } from "./Workspace";
+import { Workspace } from "./workspace.entity";
 
 @Entity()
 export class Task {
