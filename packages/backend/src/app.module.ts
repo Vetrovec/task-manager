@@ -4,6 +4,7 @@ import { AppService } from "./app.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { TaskModule } from "./task/task.module";
+import { Task } from "./entities/task.entity";
 
 @Module({
   imports: [
@@ -15,7 +16,9 @@ import { TaskModule } from "./task/task.module";
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [__dirname + "/../*/.entity{.ts,.js}"],
+      entities: [Task],
+      // entities: [__dirname + "src/entities/*.entity{.ts,.js}"],
+
       synchronize: true,
     }),
     TaskModule,
