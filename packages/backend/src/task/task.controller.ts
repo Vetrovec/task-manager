@@ -48,9 +48,9 @@ export class TaskController {
 
   @Post()
   async createTask(
-    @Body() createTaskRequest: CreateTaskDto,
+    @Body() createTaskDto: CreateTaskDto,
   ): Promise<ICreateTaskResponse> {
-    const createdTask = await this.taskService.createTask(createTaskRequest);
+    const createdTask = await this.taskService.createTask(createTaskDto);
     return {
       task: createdTask,
     };
@@ -59,12 +59,9 @@ export class TaskController {
   @Put(":id")
   async updateTask(
     @Param("id", ParseIntPipe) id: number,
-    @Body() updateTaskRequest: UpdateTaskDto,
+    @Body() updateTaskDto: UpdateTaskDto,
   ): Promise<IUpdateTaskResponse> {
-    const updatedTask = await this.taskService.updateTask(
-      id,
-      updateTaskRequest,
-    );
+    const updatedTask = await this.taskService.updateTask(id, updateTaskDto);
     if (!updatedTask) {
       throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
     }
