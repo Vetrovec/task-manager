@@ -9,6 +9,7 @@ import {
 import { SignUpDto } from "./dtos/SignUp.dto";
 import { JwtService } from "@nestjs/jwt";
 import { JwtPayload } from "./interfaces/jwt-payload.interface";
+import { OauthProfile } from "./interfaces/oauth-profile.interface";
 
 @Injectable()
 export class AuthService {
@@ -17,9 +18,24 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(email: string, password: string): Promise<User> {
+  async oauthLogin(profile: OauthProfile): Promise<User> {
+    const existingUser = await this.userService.findOneByEmail(profile.email);
+    if (existingUser) {
+      return existingUser;
+    }
+
+    const userData = {
+      displayName: profile.displayName,
+      email: profile.email,
+    };
+    const user = await this.userService.create(userData);
+
+    return user;
+  }
+
+  async signIn(email: string, password: string): Promise<User> {
     const user = await this.userService.findOneByEmail(email);
-    if (!user) {
+    if (!user?.passwordHash) {
       throw new UnauthorizedException();
     }
 
@@ -31,7 +47,7 @@ export class AuthService {
     return user;
   }
 
-  async signup(signUpDto: SignUpDto): Promise<User> {
+  async signUp(signUpDto: SignUpDto): Promise<User> {
     const existingUser = await this.userService.findOneByEmail(signUpDto.email);
     if (existingUser) {
       throw new BadRequestException();

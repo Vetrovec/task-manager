@@ -7,6 +7,7 @@ import { UserModule } from "@/user/user.module";
 import { AuthController } from "./auth.controller";
 import { LocalStrategy } from "./strategies/local.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
+import { GoogleStrategy } from "./strategies/google.strategy";
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow("jwt.secret"),
         signOptions: {
-          expiresIn: "1d",
+          expiresIn: configService.getOrThrow("jwt.expireIn"),
           algorithm: "HS384",
         },
         verifyOptions: {
@@ -27,7 +28,7 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStrategy, LocalStrategy],
+  providers: [AuthService, GoogleStrategy, JwtStrategy, LocalStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
