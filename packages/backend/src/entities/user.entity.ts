@@ -1,3 +1,4 @@
+import { IUser } from "@task-manager/shared";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,7 +8,7 @@ import {
 } from "typeorm";
 
 @Entity()
-export class User {
+export class User implements IUser {
   @PrimaryGeneratedColumn()
   id: number;
 

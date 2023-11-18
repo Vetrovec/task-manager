@@ -17,6 +17,7 @@ import { JWTAuthGuard } from "./guards/jwt-auth.guard";
 import { GoogleOauthGuard } from "./guards/google-oauth.guard";
 import { ConfigService } from "@nestjs/config";
 import { Response } from "express";
+import { IGetMeResponse } from "@task-manager/shared";
 
 @Controller("auth")
 export class AuthController {
@@ -44,8 +45,8 @@ export class AuthController {
 
   @Get("me")
   @UseGuards(JWTAuthGuard)
-  async me(@AuthUser() user: User): Promise<User> {
-    return user;
+  async me(@AuthUser() user: User): Promise<IGetMeResponse> {
+    return { user };
   }
 
   @Get("google")
