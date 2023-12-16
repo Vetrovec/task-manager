@@ -7,22 +7,25 @@ import {
   Put,
   Delete,
   NotFoundException,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { CreateWorkplaceDto } from "./dtos/CreateWorkplace.dto";
 import { UpdateWorkplaceDto } from "./dtos/UpdateWorkplace.dto";
 import { WorkplaceService } from "./workplace.service";
+import { IFindAllWorkplacesResponse } from "@task-manager/shared";
 
 @Controller("workplace")
 export class WorkplaceController {
   constructor(private workplaceService: WorkplaceService) {}
 
   @Get()
-  async findAll() {
-    return this.workplaceService.findAll();
+  async findAll(): Promise<IFindAllWorkplacesResponse> {
+    const workplaces = await this.workplaceService.findAll();
+    return { workplaces };
   }
 
   @Get(":id")
-  async findOne(@Param("id") id: string) {
+  async findOne(@Param("id", ParseIntPipe) id: number) {
     const workplace = await this.workplaceService.findOne(id);
     if (!workplace) {
       throw new NotFoundException(`Workplace with ID ${id} not found.`);
@@ -32,16 +35,18 @@ export class WorkplaceController {
 
   @Post()
   async create(@Body() createWorkplaceDto: CreateWorkplaceDto) {
-
     return this.workplaceService.create(createWorkplaceDto);
   }
 
   @Put(":id")
   async update(
-      @Param("id") id: string,
-      @Body() updateWorkplaceDto: UpdateWorkplaceDto,
+    @Param("id", ParseIntPipe) id: number,
+    @Body() updateWorkplaceDto: UpdateWorkplaceDto,
   ) {
-    const updatedWorkplace = await this.workplaceService.update(id, updateWorkplaceDto);
+    const updatedWorkplace = await this.workplaceService.update(
+      id,
+      updateWorkplaceDto,
+    );
     if (!updatedWorkplace) {
       throw new NotFoundException(`Workplace with ID ${id} not found.`);
     }
@@ -49,7 +54,7 @@ export class WorkplaceController {
   }
 
   @Delete(":id")
-  async delete(@Param("id") id: string) {
+  async delete(@Param("id", ParseIntPipe) id: number) {
     try {
       await this.workplaceService.delete(id);
     } catch (e) {
