@@ -1,5 +1,6 @@
 import { ITask } from "@task-manager/shared";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Workplace } from './workplace.entity'; // Adjust the import path as needed
 
 @Entity()
 export class Task implements ITask {
@@ -17,4 +18,7 @@ export class Task implements ITask {
 
   @Column({ default: "open" })
   status: "open" | "closed";
+
+  @ManyToOne(() => Workplace, workplace => workplace.tasks)
+  workplace: Workplace;
 }

@@ -6,6 +6,7 @@ import {
   Post,
   Put,
   Delete,
+  NotFoundException,
 } from "@nestjs/common";
 import { CreateWorkplaceDto } from "./dtos/CreateWorkplace.dto";
 import { UpdateWorkplaceDto } from "./dtos/UpdateWorkplace.dto";
@@ -17,29 +18,43 @@ export class WorkplaceController {
 
   @Get()
   async findAll() {
-    // Implement findAll logic
+    return this.workplaceService.findAll();
   }
 
   @Get(":id")
   async findOne(@Param("id") id: string) {
-    // Implement findOne logic
+    const workplace = await this.workplaceService.findOne(id);
+    if (!workplace) {
+      throw new NotFoundException(`Workplace with ID ${id} not found.`);
+    }
+    return workplace;
   }
 
   @Post()
   async create(@Body() createWorkplaceDto: CreateWorkplaceDto) {
-    // Implement create logic
+
+    return this.workplaceService.create(createWorkplaceDto);
   }
 
   @Put(":id")
   async update(
-    @Param("id") id: string,
-    @Body() updateWorkplaceDto: UpdateWorkplaceDto,
+      @Param("id") id: string,
+      @Body() updateWorkplaceDto: UpdateWorkplaceDto,
   ) {
-    // Implement update logic
+    const updatedWorkplace = await this.workplaceService.update(id, updateWorkplaceDto);
+    if (!updatedWorkplace) {
+      throw new NotFoundException(`Workplace with ID ${id} not found.`);
+    }
+    return updatedWorkplace;
   }
 
   @Delete(":id")
   async delete(@Param("id") id: string) {
-    // Implement delete logic
+    try {
+      await this.workplaceService.delete(id);
+    } catch (e) {
+      throw new NotFoundException(`Workplace with ID ${id} not found.`);
+    }
+    return {};
   }
 }

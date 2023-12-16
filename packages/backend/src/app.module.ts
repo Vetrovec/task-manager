@@ -7,6 +7,7 @@ import { TaskModule } from "./task/task.module";
 import { join } from "path";
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
+import { WorkplaceModule } from "./workplace/workplace.module";
 import appConfig from "./config/app.config";
 
 @Module({
@@ -29,6 +30,7 @@ import appConfig from "./config/app.config";
     AuthModule,
     TaskModule,
     UserModule,
+    WorkplaceModule
   ],
   controllers: [AppController],
   providers: [AppService],
