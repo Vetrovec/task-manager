@@ -17,6 +17,13 @@ function handler(req, res) {
 }
 
 const server = http.createServer(handler);
+
+server.on("upgrade", function (req, socket, head) {
+  proxy.ws(req, socket, head, {
+    target: getTarget(req),
+  });
+});
+
 server.listen(3000, () => {
   console.log("Proxy listening on port 3000");
 });

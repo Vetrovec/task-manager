@@ -7,6 +7,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
+import type { Response } from "express";
 import { SignUpDto } from "./dtos/SignUp.dto";
 import { AuthService } from "./auth.service";
 import { User } from "@/entities/user.entity";
@@ -16,7 +17,6 @@ import { AuthUser } from "./decorators/user.decorator";
 import { JWTAuthGuard } from "./guards/jwt-auth.guard";
 import { GoogleOauthGuard } from "./guards/google-oauth.guard";
 import { ConfigService } from "@nestjs/config";
-import { Response } from "express";
 import { IGetMeResponse } from "@task-manager/shared";
 
 @Controller("auth")
@@ -41,6 +41,13 @@ export class AuthController {
   @UseInterceptors(TokenInterceptor)
   async login(@AuthUser() user: User): Promise<User> {
     return user;
+  }
+
+  @Post("logout")
+  @UseGuards(JWTAuthGuard)
+  async logout(@Res() res: Response): Promise<void> {
+    res.clearCookie("token");
+    res.send();
   }
 
   @Get("me")
