@@ -28,10 +28,21 @@ export default function DashboardLayout({
   }
 
   return (
-    <div>
-      <div>Hello, {user.displayName}!</div>
-      <button onClick={() => trigger()}>Logout</button>
-      <div>{children}</div>
+    <div className="h-full p-4 bg-zinc-400">
+      <div className="flex h-full gap-4">
+        <div className="w-28 h-full py-4 bg-blue-500 rounded-xl">
+          <div className="text-center text-white">Dashboard</div>
+        </div>
+        <div className="flex flex-col flex-auto gap-4">
+          <div className="flex w-full h-16 px-4 justify-between items-center bg-white rounded-xl">
+            <div className="text-xl">{user.displayName}</div>
+            <button className="text-sm" onClick={() => trigger()}>
+              Logout
+            </button>
+          </div>
+          <div>{children}</div>
+        </div>
+      </div>
     </div>
   );
 }

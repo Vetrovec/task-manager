@@ -8,16 +8,18 @@ import { UpdateWorkplaceDto } from "./dtos/UpdateWorkplace.dto";
 @Injectable()
 export class WorkplaceService {
   constructor(
-      @InjectRepository(Workplace)
-      private workplaceRepository: Repository<Workplace>,
+    @InjectRepository(Workplace)
+    private workplaceRepository: Repository<Workplace>,
   ) {}
 
   async findAll(): Promise<Workplace[]> {
     return this.workplaceRepository.find();
   }
 
-  async findOne(id: string): Promise<Workplace | undefined> {
-    const workplace = await this.workplaceRepository.findOne({ where: { workplaceID: id } });
+  async findOne(id: number): Promise<Workplace | undefined> {
+    const workplace = await this.workplaceRepository.findOne({
+      where: { id: id },
+    });
     if (!workplace) {
       throw new NotFoundException(`Workplace with ID ${id} not found.`);
     }
@@ -29,7 +31,10 @@ export class WorkplaceService {
     return this.workplaceRepository.save(newWorkplace);
   }
 
-  async update(id: string, updateWorkplaceDto: UpdateWorkplaceDto): Promise<Workplace> {
+  async update(
+    id: number,
+    updateWorkplaceDto: UpdateWorkplaceDto,
+  ): Promise<Workplace> {
     const workplace = await this.findOne(id);
     if (!workplace) {
       throw new NotFoundException(`Workplace with ID ${id} not found.`);
@@ -38,7 +43,7 @@ export class WorkplaceService {
     return this.workplaceRepository.save(workplace);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     const result = await this.workplaceRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Workplace with ID ${id} not found.`);

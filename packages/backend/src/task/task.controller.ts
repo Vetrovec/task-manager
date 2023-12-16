@@ -90,10 +90,13 @@ export class TaskController {
 
   @Put(":taskId/workplace/:workplaceId")
   async assignWorkplace(
-      @Param("taskId", ParseIntPipe) taskId: number,
-      @Param("workplaceId") workplaceId: string
+    @Param("taskId", ParseIntPipe) taskId: number,
+    @Param("workplaceId", ParseIntPipe) workplaceId: number,
   ): Promise<IUpdateTaskResponse> {
-    const updatedTask = await this.taskService.assignWorkplace(taskId, workplaceId);
+    const updatedTask = await this.taskService.assignWorkplace(
+      taskId,
+      workplaceId,
+    );
     return {
       task: updatedTask,
     };

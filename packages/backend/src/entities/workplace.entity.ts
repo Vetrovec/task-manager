@@ -1,21 +1,27 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from "typeorm";
-import { Task } from './task.entity';
-
+import { IWorkplace } from "@task-manager/shared";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  CreateDateColumn,
+} from "typeorm";
+import { Task } from "./task.entity";
 
 @Entity()
-export class Workplace {
-  @PrimaryGeneratedColumn("uuid")
-  workplaceID: string;
+export class Workplace implements IWorkplace {
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @CreateDateColumn()
-  creationDate: Date;
+  createdAt: Date;
 
-  @Column({length: 255})
+  @Column({ length: 255 })
   name: string;
 
-  @Column({length: 4000})
+  @Column({ length: 4000 })
   text: string;
 
-  @OneToMany(() => Task, task => task.workplace)
+  @OneToMany(() => Task, (task) => task.workplace)
   tasks: Task[];
 }
