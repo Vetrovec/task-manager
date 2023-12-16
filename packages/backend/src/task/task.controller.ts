@@ -87,4 +87,15 @@ export class TaskController {
       message: `Task with id ${id} has been deleted`,
     };
   }
+
+  @Put(":taskId/workplace/:workplaceId")
+  async assignWorkplace(
+      @Param("taskId", ParseIntPipe) taskId: number,
+      @Param("workplaceId") workplaceId: string
+  ): Promise<IUpdateTaskResponse> {
+    const updatedTask = await this.taskService.assignWorkplace(taskId, workplaceId);
+    return {
+      task: updatedTask,
+    };
+  }
 }

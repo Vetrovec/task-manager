@@ -1,21 +1,21 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-// import { User } from './user.entity';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany, CreateDateColumn } from "typeorm";
+import { Task } from './task.entity';
+
 
 @Entity()
 export class Workplace {
   @PrimaryGeneratedColumn("uuid")
   workplaceID: string;
 
-  @Column()
-  creationDate: string;
+  @CreateDateColumn()
+  creationDate: Date;
 
-  @Column({ length: 255 })
+  @Column({length: 255})
   name: string;
 
-  @Column({ length: 4000 })
+  @Column({length: 4000})
   text: string;
+
+  @OneToMany(() => Task, task => task.workplace)
+  tasks: Task[];
 }
-//
-//     @OneToMany(() => User, operator => user.workplace)
-//     operators: User[];
-// }

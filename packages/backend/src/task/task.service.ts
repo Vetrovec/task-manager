@@ -1,13 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import {HttpException, HttpStatus, Injectable} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Task } from "@/entities/task.entity";
 import { Repository } from "typeorm";
 import { ITask } from "@task-manager/shared";
+import {Workplace} from "@/entities/workplace.entity";
 
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(Task) private taskRepository: Repository<Task>,
+    @InjectRepository(Workplace) private workplaceRepository: Repository<Workplace>,
   ) {}
 
   findTasks() {
@@ -40,5 +42,20 @@ export class TaskService {
     }
     await this.taskRepository.delete(id);
     return true;
+  }
+
+  async assignWorkplace(taskId: number, workplaceId: string): Promise<Task> {
+    const task = await this.taskRepository.findOne({ where: { id: taskId }, relations: ['workplace'] });
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    const workplace = await this.workplaceRepository.findOne( {where: { workplaceID: workplaceId}});
+    if (!workplace) {
+      throw new HttpException('Workplace not found', HttpStatus.NOT_FOUND);
+    }
+
+    task.workplace = workplace;
+    return this.taskRepository.save(task);
   }
 }
