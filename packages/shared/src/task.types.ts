@@ -1,9 +1,11 @@
+import { TaskStatus } from "./enums.types";
+
 export interface ITask {
   id: number;
   name: string;
   description: string;
   price: number;
-  status: "open" | "closed";
+  status: TaskStatus;
 }
 
 export interface IFindAllTasksResponse {
@@ -18,7 +20,6 @@ export interface ICreateTaskRequest {
   name: string;
   description?: string;
   price: number;
-  status: "open" | "closed";
 }
 
 export interface ICreateTaskResponse {
@@ -29,7 +30,7 @@ export interface IUpdateTaskRequest {
   name?: string;
   description?: string;
   price?: number;
-  status?: "open" | "closed";
+  status?: TaskStatus;
 }
 
 export interface IUpdateTaskResponse {

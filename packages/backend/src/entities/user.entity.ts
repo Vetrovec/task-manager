@@ -5,7 +5,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import { Task } from "./task.entity";
+import { Exclude } from "class-transformer";
 
 @Entity()
 export class User implements IUser {
@@ -18,6 +21,7 @@ export class User implements IUser {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column({ nullable: true })
   passwordHash?: string;
 
@@ -26,4 +30,7 @@ export class User implements IUser {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Task, (task) => task.user)
+  tasks: Task[];
 }

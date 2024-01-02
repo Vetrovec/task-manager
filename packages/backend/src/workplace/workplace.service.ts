@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Workplace } from "@/entities/workplace.entity";
 import { CreateWorkplaceDto } from "./dtos/CreateWorkplace.dto";
 import { UpdateWorkplaceDto } from "./dtos/UpdateWorkplace.dto";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class WorkplaceService {
@@ -16,9 +16,9 @@ export class WorkplaceService {
     return this.workplaceRepository.find();
   }
 
-  async findOne(id: number): Promise<Workplace | undefined> {
+  async findOne(id: number): Promise<Workplace> {
     const workplace = await this.workplaceRepository.findOne({
-      where: { id: id },
+      where: { id },
     });
     if (!workplace) {
       throw new NotFoundException(`Workplace with ID ${id} not found.`);

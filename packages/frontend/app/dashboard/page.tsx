@@ -5,6 +5,7 @@ import { fetcher } from "../helpers/fetcher";
 import { IFindAllWorkplacesResponse } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
+import Link from "next/link";
 
 async function createWorkplace(
   url: string,
@@ -95,7 +96,7 @@ export default function Dashboard() {
           className="font-semibold text-lg"
           onClick={() => setShowCreateWorkplace(true)}
         >
-          + New Workspace
+          + New Workplace
         </button>
       </div>
       {!data?.workplaces.length && (
@@ -106,10 +107,17 @@ export default function Dashboard() {
         </div>
       )}
       {data?.workplaces.map((workplace) => (
-        <div key={workplace.id} className="p-4 bg-white rounded-xl">
-          <p className="text-lg font-semibold">{workplace.name}</p>
-          <p className="text-sm font-medium text-gray-500">{workplace.text}</p>
-        </div>
+        <Link
+          key={workplace.id}
+          href={`/dashboard/workplace?id=${workplace.id}`}
+        >
+          <div className="p-4 bg-white rounded-xl">
+            <p className="text-lg font-semibold">{workplace.name}</p>
+            <p className="text-sm font-medium text-gray-500">
+              {workplace.text}
+            </p>
+          </div>
+        </Link>
       ))}
     </div>
   );

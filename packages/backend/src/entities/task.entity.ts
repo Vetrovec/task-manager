@@ -1,6 +1,7 @@
-import { ITask } from "@task-manager/shared";
+import { ITask, TaskStatus } from "@task-manager/shared";
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
-import { Workplace } from './workplace.entity'; // Adjust the import path as needed
+import { Workplace } from "./workplace.entity"; // Adjust the import path as needed
+import { User } from "./user.entity";
 
 @Entity()
 export class Task implements ITask {
@@ -16,9 +17,14 @@ export class Task implements ITask {
   @Column()
   price: number;
 
-  @Column({ default: "open" })
-  status: "open" | "closed";
+  @Column()
+  status: TaskStatus;
 
-  @ManyToOne(() => Workplace, workplace => workplace.tasks)
+  @ManyToOne(() => User, (user) => user.tasks, { nullable: true })
+  user: User | null;
+
+  @ManyToOne(() => Workplace, (workplace) => workplace.tasks, {
+    nullable: false,
+  })
   workplace: Workplace;
 }

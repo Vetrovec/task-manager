@@ -18,8 +18,18 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/": ["./src"],
-      "@/*": ["./src/*"]
+      "@/": [
+        "./src"
+      ],
+      "@/*": [
+        "./src/*"
+      ],
+      "@task-manager/shared": [
+        "libs/shared/src"
+      ],
+      "@task-manager/shared/*": [
+        "libs/shared/src/*"
+      ]
     }
   }
 }

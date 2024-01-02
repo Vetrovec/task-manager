@@ -8,12 +8,15 @@ import {
   Delete,
   NotFoundException,
   ParseIntPipe,
+  UseGuards,
 } from "@nestjs/common";
 import { CreateWorkplaceDto } from "./dtos/CreateWorkplace.dto";
 import { UpdateWorkplaceDto } from "./dtos/UpdateWorkplace.dto";
 import { WorkplaceService } from "./workplace.service";
 import { IFindAllWorkplacesResponse } from "@task-manager/shared";
+import { JWTAuthGuard } from "@/auth/guards/jwt-auth.guard";
 
+@UseGuards(JWTAuthGuard)
 @Controller("workplace")
 export class WorkplaceController {
   constructor(private workplaceService: WorkplaceService) {}

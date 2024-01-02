@@ -3,12 +3,13 @@ import {
   Controller,
   Get,
   Param,
-  Put,
   Post,
+  Patch,
   Delete,
   HttpException,
   HttpStatus,
   ParseIntPipe,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ICreateTaskResponse,
@@ -20,27 +21,47 @@ import {
 import { TaskService } from "./task.service";
 import { CreateTaskDto } from "./dtos/CreateTask.dto";
 import { UpdateTaskDto } from "./dtos/UpdateTask.dto";
+import { AuthUser } from "@/auth/decorators/user.decorator";
+import { User } from "@/entities/user.entity";
+import { JWTAuthGuard } from "@/auth/guards/jwt-auth.guard";
 
-@Controller("task")
+@UseGuards(JWTAuthGuard)
+@Controller("workplace/:workplaceId/task")
 export class TaskController {
   constructor(private taskService: TaskService) {}
 
-  @Get()
-  async findAllTasks(): Promise<IFindAllTasksResponse> {
-    const tasks = await this.taskService.findTasks();
+  @Get("available")
+  async findAvailableTasks(
+    @Param("workplaceId", ParseIntPipe) workplaceId: number,
+  ): Promise<IFindAllTasksResponse> {
+    const tasks = await this.taskService.findAvailableTasks(workplaceId);
+
     return {
       tasks,
     };
   }
 
-  @Get(":id")
+  @Get("active")
+  async findOwnedTasks(
+    @AuthUser() user: User,
+    @Param("workplaceId", ParseIntPipe) workplaceId: number,
+  ): Promise<IFindAllTasksResponse> {
+    const tasks = await this.taskService.findActiveTasks(workplaceId, user);
+
+    return {
+      tasks,
+    };
+  }
+
+  @Get(":taskId")
   async findOneTask(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("taskId", ParseIntPipe) taskId: number,
   ): Promise<IFindOneTaskResponse> {
-    const task = await this.taskService.findTaskById(id);
+    const task = await this.taskService.findTaskById(taskId);
     if (!task) {
       throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
     }
+
     return {
       task,
     };
@@ -48,57 +69,82 @@ export class TaskController {
 
   @Post()
   async createTask(
+    @Param("workplaceId", ParseIntPipe) workplaceId: number,
     @Body() createTaskDto: CreateTaskDto,
   ): Promise<ICreateTaskResponse> {
-    const createdTask = await this.taskService.createTask(createTaskDto);
+    const createdTask = await this.taskService.createTask(
+      workplaceId,
+      createTaskDto,
+    );
+
     return {
       task: createdTask,
     };
   }
 
-  @Put(":id")
+  @Patch(":taskId/claim")
+  async claimTask(
+    @AuthUser() user: User,
+    @Param("taskId", ParseIntPipe) taskId: number,
+  ): Promise<IUpdateTaskResponse> {
+    const updatedTask = await this.taskService.assignTask(taskId, user);
+
+    return {
+      task: updatedTask,
+    };
+  }
+
+  @Patch(":taskId/complete")
+  async completeTask(
+    @AuthUser() user: User,
+    @Param("taskId", ParseIntPipe) taskId: number,
+  ): Promise<IUpdateTaskResponse> {
+    const updatedTask = await this.taskService.completeTask(taskId, user);
+
+    return {
+      task: updatedTask,
+    };
+  }
+
+  @Patch(":taskId/cancel")
+  async cancelTask(
+    @AuthUser() user: User,
+    @Param("taskId", ParseIntPipe) taskId: number,
+  ): Promise<IUpdateTaskResponse> {
+    const updatedTask = await this.taskService.cancelTask(taskId, user);
+
+    return {
+      task: updatedTask,
+    };
+  }
+
+  @Patch(":taskId")
   async updateTask(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("taskId", ParseIntPipe) taskId: number,
     @Body() updateTaskDto: UpdateTaskDto,
   ): Promise<IUpdateTaskResponse> {
-    const updatedTask = await this.taskService.updateTask(id, updateTaskDto);
+    const updatedTask = await this.taskService.updateTask(
+      taskId,
+      updateTaskDto,
+    );
     if (!updatedTask) {
       throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
     }
+
     return {
       task: updatedTask,
     };
   }
 
-  @Delete(":id")
+  @Delete(":taskId")
   async deleteTask(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<IDeleteTaskResponse> {
-    const deleteTaskResult = await this.taskService.deleteTask(id);
-    // TODO: Provide correct reasons for failure
-    if (!deleteTaskResult) {
-      return {
-        success: false,
-        message: `Task with id ${id} is open and cannot be deleted`,
-      };
-    }
-    return {
-      success: deleteTaskResult,
-      message: `Task with id ${id} has been deleted`,
-    };
-  }
-
-  @Put(":taskId/workplace/:workplaceId")
-  async assignWorkplace(
     @Param("taskId", ParseIntPipe) taskId: number,
-    @Param("workplaceId", ParseIntPipe) workplaceId: number,
-  ): Promise<IUpdateTaskResponse> {
-    const updatedTask = await this.taskService.assignWorkplace(
-      taskId,
-      workplaceId,
-    );
+  ): Promise<IDeleteTaskResponse> {
+    await this.taskService.deleteTask(taskId);
+
     return {
-      task: updatedTask,
+      success: true,
+      message: `Task with id ${taskId} has been deleted`,
     };
   }
 }

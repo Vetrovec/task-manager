@@ -1,10 +1,10 @@
-import { IUpdateTaskRequest } from "@task-manager/shared";
-import { IsString, IsNumber, IsIn, IsOptional } from "class-validator";
+import { IUpdateTaskRequest, TaskStatus } from "@task-manager/shared";
+import { IsString, IsNumber, IsOptional } from "class-validator";
 
 export class UpdateTaskDto implements IUpdateTaskRequest {
   @IsString()
   @IsOptional()
-  name: string;
+  name?: string;
 
   @IsString()
   @IsOptional()
@@ -14,7 +14,7 @@ export class UpdateTaskDto implements IUpdateTaskRequest {
   @IsOptional()
   price?: number;
 
-  @IsIn(["open", "closed"])
+  @IsString()
   @IsOptional()
-  status: "open" | "closed";
+  status?: TaskStatus;
 }
