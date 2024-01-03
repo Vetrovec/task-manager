@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,19 +12,22 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "@/entities/user.entity";
 import { UserWorkplace } from "@/entities/user-workplace.entity";
 import { Role } from "@/entities/role.entity";
+import { AddUserDto } from "./dtos/AddUser.dto";
 
 @Injectable()
 export class WorkplaceService {
   constructor(
     @InjectRepository(Role)
     private roleRepository: Repository<Role>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     @InjectRepository(Workplace)
     private workplaceRepository: Repository<Workplace>,
     @InjectRepository(UserWorkplace)
     private userWorkplaceRepository: Repository<UserWorkplace>,
   ) {}
 
-  async findAll(user: User): Promise<Workplace[]> {
+  async findForUser(user: User) {
     const userWorkplaces = await this.userWorkplaceRepository.find({
       where: { user: { id: user.id } },
       relations: ["workplace"],
@@ -32,17 +36,31 @@ export class WorkplaceService {
     return userWorkplaces.map((userWorkplace) => userWorkplace.workplace);
   }
 
-  async findOne(id: number, user: User): Promise<Workplace> {
-    const userWorkplaces = await this.userWorkplaceRepository.findOne({
+  async getWorkplaceDetails(id: number, user: User) {
+    const userWorkplace = await this.userWorkplaceRepository.findOne({
       where: { user: { id: user.id }, workplace: { id } },
-      relations: ["workplace"],
+      relations: ["workplace", "role"],
     });
 
-    if (!userWorkplaces?.workplace) {
+    if (!userWorkplace?.workplace) {
       throw new NotFoundException(`Workplace with ID ${id} not found.`);
     }
 
-    return userWorkplaces.workplace;
+    let userWorkplaces: UserWorkplace[] = [];
+    if (userWorkplace.role.name === "Operator") {
+      userWorkplaces = await this.userWorkplaceRepository.find({
+        where: { workplace: { id } },
+        relations: ["user", "role"],
+      });
+    }
+
+    return {
+      workplace: userWorkplace.workplace,
+      users: userWorkplaces.map((userWorkplace) => ({
+        user: userWorkplace.user,
+        role: userWorkplace.role.name,
+      })),
+    };
   }
 
   async create(
@@ -75,27 +93,79 @@ export class WorkplaceService {
     return workplace;
   }
 
+  // TODO: Refactor
   async update(
     id: number,
     updateWorkplaceDto: UpdateWorkplaceDto,
     user: User,
   ): Promise<Workplace> {
-    const workplace = await this.findOne(id, user);
+    const userWorkplace = await this.userWorkplaceRepository.findOne({
+      where: { user: { id: user.id }, workplace: { id } },
+      relations: ["role", "workplace"],
+    });
+    if (userWorkplace?.role.name !== "Operator") {
+      throw new BadRequestException("User is not an operator");
+    }
+
+    await this.workplaceRepository.update(userWorkplace, {
+      name: updateWorkplaceDto.name,
+      text: updateWorkplaceDto.text,
+    });
+
+    const workplace = await this.workplaceRepository.findOne({ where: { id } });
+
     if (!workplace) {
       throw new NotFoundException(`Workplace with ID ${id} not found.`);
     }
 
-    await this.workplaceRepository.update(id, {
-      name: updateWorkplaceDto.name,
-      text: updateWorkplaceDto.text,
-    });
-    return this.workplaceRepository.save(workplace);
+    return workplace;
   }
 
+  // TODO: Implement
   async delete(id: number): Promise<void> {
-    const result = await this.workplaceRepository.delete(id);
-    if (result.affected === 0) {
+    id;
+  }
+
+  async addUser(id: number, addUserDto: AddUserDto, user: User) {
+    const currentUserWorkplace = await this.userWorkplaceRepository.findOne({
+      where: {
+        user: { id: user.id },
+        workplace: { id },
+      },
+      relations: ["role"],
+    });
+    if (currentUserWorkplace?.role.name !== "Operator") {
+      throw new BadRequestException("User is not an operator");
+    }
+
+    const workplace = await this.workplaceRepository.findOne({
+      where: { id },
+    });
+    if (!workplace) {
       throw new NotFoundException(`Workplace with ID ${id} not found.`);
     }
+
+    const targetUser = await this.userRepository.findOne({
+      where: { email: addUserDto.email },
+    });
+    if (!targetUser) {
+      throw new NotFoundException(
+        `User with email ${addUserDto.email} not found.`,
+      );
+    }
+
+    const role = await this.roleRepository.findOne({
+      where: { name: addUserDto.role },
+    });
+    if (!role) {
+      throw new InternalServerErrorException("Role not found");
+    }
+
+    const newUserWorkplace = this.userWorkplaceRepository.create({
+      user: targetUser,
+      workplace,
+      role,
+    });
+    await this.userWorkplaceRepository.save(newUserWorkplace);
   }
 }
