@@ -8,19 +8,30 @@ import { IsNull, Repository } from "typeorm";
 import { CreateTaskDto } from "./dtos/CreateTask.dto";
 import { UpdateTaskDto } from "./dtos/UpdateTask.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Workplace } from "@/entities/workplace.entity";
 import { User } from "@/entities/user.entity";
+import { UserWorkplace } from "@/entities/user-workplace.entity";
 
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(Task)
     private taskRepository: Repository<Task>,
-    @InjectRepository(Workplace)
-    private workplaceRepository: Repository<Workplace>,
+    @InjectRepository(UserWorkplace)
+    private userWorkplaceRepository: Repository<UserWorkplace>,
   ) {}
 
-  findAvailableTasks(workplaceId: number) {
+  async findAvailableTasks(workplaceId: number, user: User) {
+    const userWorkplace = await this.userWorkplaceRepository.findOne({
+      where: {
+        user: { id: user.id },
+        workplace: { id: workplaceId },
+      },
+    });
+
+    if (!userWorkplace) {
+      throw new BadRequestException("User is not a member of this workplace");
+    }
+
     return this.taskRepository.find({
       where: {
         workplace: { id: workplaceId },
@@ -46,7 +57,19 @@ export class TaskService {
     return this.taskRepository.findOne({ where: { id } });
   }
 
-  async createTask(workplaceId: number, dto: CreateTaskDto) {
+  async createTask(workplaceId: number, dto: CreateTaskDto, user: User) {
+    const userWorkplace = await this.userWorkplaceRepository.findOne({
+      where: {
+        user: { id: user.id },
+        workplace: { id: workplaceId },
+      },
+      relations: ["role"],
+    });
+
+    if (userWorkplace?.role.name !== "Operator") {
+      throw new BadRequestException("User is not an operator");
+    }
+
     const newTask = this.taskRepository.create({
       name: dto.name,
       description: dto.description,
@@ -59,24 +82,10 @@ export class TaskService {
     return newTask;
   }
 
-  async updateTask(
-    id: number,
-    updateTask: UpdateTaskDto,
-  ): Promise<Task | null> {
-    await this.taskRepository.update(id, {
-      name: updateTask.name,
-      description: updateTask.description,
-      price: updateTask.price,
-      status: updateTask.status,
-    });
-
-    return this.taskRepository.findOne({ where: { id } });
-  }
-
   async assignTask(taskId: number, user: User): Promise<Task> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
-      relations: ["user"],
+      relations: ["user", "workplace"],
     });
 
     if (!task) {
@@ -85,6 +94,18 @@ export class TaskService {
 
     if (task.user) {
       throw new BadRequestException("Task already assigned");
+    }
+
+    const userWorkplace = await this.userWorkplaceRepository.findOne({
+      where: {
+        user: { id: user.id },
+        workplace: { id: task.workplace.id },
+      },
+      relations: ["role"],
+    });
+
+    if (userWorkplace?.role.name !== "Worker") {
+      throw new BadRequestException("User is not an worker");
     }
 
     task.user = user;
@@ -120,6 +141,20 @@ export class TaskService {
 
     task.status = "Cancelled";
     return this.taskRepository.save(task);
+  }
+
+  async updateTask(
+    id: number,
+    updateTask: UpdateTaskDto,
+  ): Promise<Task | null> {
+    await this.taskRepository.update(id, {
+      name: updateTask.name,
+      description: updateTask.description,
+      price: updateTask.price,
+      status: updateTask.status,
+    });
+
+    return this.taskRepository.findOne({ where: { id } });
   }
 
   async deleteTask(id: number): Promise<void> {

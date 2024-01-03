@@ -32,9 +32,10 @@ export class TaskController {
 
   @Get("available")
   async findAvailableTasks(
+    @AuthUser() user: User,
     @Param("workplaceId", ParseIntPipe) workplaceId: number,
   ): Promise<IFindAllTasksResponse> {
-    const tasks = await this.taskService.findAvailableTasks(workplaceId);
+    const tasks = await this.taskService.findAvailableTasks(workplaceId, user);
 
     return {
       tasks,
@@ -69,12 +70,14 @@ export class TaskController {
 
   @Post()
   async createTask(
+    @AuthUser() user: User,
     @Param("workplaceId", ParseIntPipe) workplaceId: number,
     @Body() createTaskDto: CreateTaskDto,
   ): Promise<ICreateTaskResponse> {
     const createdTask = await this.taskService.createTask(
       workplaceId,
       createTaskDto,
+      user,
     );
 
     return {

@@ -8,6 +8,7 @@ import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import ClaimableTaskTile from "./components/ClaimableTask";
 import ActiveTaskTile from "./components/ActiveTask";
+import DialogCreateTask from "./components/DialogCreateTask";
 
 async function createTask(
   url: string,
@@ -60,71 +61,19 @@ export default function Workplace() {
 
   const [showCreateTask, setShowCreateTask] = useState(false);
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState(0);
-
-  const closeCreateTask = () => {
-    setShowCreateTask(false);
-    setName("");
-    setDescription("");
-  };
-
   return (
     <div className="grid grid-cols-3 gap-4">
-      <dialog
-        className="fixed top-1/2 left-1/2 p-8 m-0 border border-black rounded-xl -translate-x-1/2 -translate-y-1/2"
+      <DialogCreateTask
         open={showCreateTask}
-      >
-        <button
-          className="absolute top-2 right-4 text-lg"
-          onClick={closeCreateTask}
-        >
-          &times;
-        </button>
-        <form
-          className="w-96 flex flex-col gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            triggerCreateTask({ name, description, price });
-            closeCreateTask();
-          }}
-        >
-          <label>
-            <div className="px-2">Name</div>
-            <input
-              className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
-              type="text"
-              placeholder="Enter a name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          <label>
-            <div className="px-2">Description</div>
-            <input
-              className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
-              type="text"
-              placeholder="Enter a description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </label>
-          <label>
-            <div className="px-2">Price</div>
-            <input
-              className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
-              type="number"
-              placeholder="Enter a price"
-              value={price}
-              onChange={(e) => setPrice(e.target.valueAsNumber)}
-            />
-          </label>
-          <button className="w-full h-14 bg-black text-white rounded-lg">
-            Create
-          </button>
-        </form>
-      </dialog>
+        onClose={() => setShowCreateTask(false)}
+        onSubmit={(e) =>
+          triggerCreateTask({
+            name: e.name,
+            description: e.description,
+            price: e.price,
+          })
+        }
+      />
       <div className="flex col-span-3 justify-end p-4 bg-white rounded-xl">
         <button
           className="font-semibold text-lg"

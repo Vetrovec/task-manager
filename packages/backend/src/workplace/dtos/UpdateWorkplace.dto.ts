@@ -1,10 +1,6 @@
-import { IsString, IsUUID, Length, IsOptional } from "class-validator";
+import { IsString, Length, IsOptional } from "class-validator";
 
 export class UpdateWorkplaceDto {
-  @IsUUID()
-  @IsOptional()
-  workplaceID?: string;
-
   @IsString()
   @Length(1, 255)
   @IsOptional()
