@@ -7,6 +7,5 @@ html {
 }
 
 body {
-  @apply bg-slate-300;
   min-height: 100%;
 }

@@ -4,9 +4,9 @@ import "./globals.css";
 import { Poppins } from "next/font/google";
 import useSWR from "swr";
 import { IGetMeResponse } from "@task-manager/shared";
-import { fetcher } from "../helpers/fetcher";
-import { UserContext } from "../contexts/UserContext";
-import Loading from "../components/Loading";
+import { fetcher } from "@/helpers/fetcher";
+import { UserContext } from "@/contexts/UserContext";
+import Loading from "@/components/Loading";
 
 const inter = Poppins({
   subsets: ["latin"],

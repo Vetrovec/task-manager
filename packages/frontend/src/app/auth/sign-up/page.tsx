@@ -46,10 +46,10 @@ export default function SignUp() {
   return (
     <>
       <Link
-        className="flex justify-center items-center h-14 border border-black rounded-full"
+        className="flex justify-center items-center h-14 border bg-white border-black rounded-full"
         href="/api/v1/auth/google"
       >
-        Sign up with google
+        Sign up with Google
       </Link>
       <form
         className="flex flex-col my-8 gap-4"

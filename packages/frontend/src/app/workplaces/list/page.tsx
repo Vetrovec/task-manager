@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { fetcher } from "../../helpers/fetcher";
+import { fetcher } from "@/helpers/fetcher";
 import { IFindAllWorkplacesResponse } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
@@ -107,10 +107,7 @@ export default function Dashboard() {
         </div>
       )}
       {data?.workplaces.map((workplace) => (
-        <Link
-          key={workplace.id}
-          href={`/dashboard/workplace?id=${workplace.id}`}
-        >
+        <Link key={workplace.id} href={`/workplaces/get?id=${workplace.id}`}>
           <div className="p-4 bg-white rounded-xl">
             <p className="text-lg font-semibold">{workplace.name}</p>
             <p className="text-sm font-medium text-gray-500">

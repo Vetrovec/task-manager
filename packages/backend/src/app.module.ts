@@ -9,6 +9,7 @@ import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { WorkplaceModule } from "./workplace/workplace.module";
 import appConfig from "./config/app.config";
+import { PayrollModule } from "./payroll/payroll.module";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import appConfig from "./config/app.config";
       inject: [ConfigService],
     }),
     AuthModule,
+    PayrollModule,
     TaskModule,
     UserModule,
     WorkplaceModule,

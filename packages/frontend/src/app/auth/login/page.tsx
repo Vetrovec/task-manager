@@ -41,10 +41,10 @@ export default function Login() {
   return (
     <>
       <Link
-        className="flex justify-center items-center h-14 border border-black rounded-full"
+        className="flex justify-center items-center h-14 border bg-white border-black rounded-full focus:outline-none"
         href="/api/v1/auth/google"
       >
-        Sign in with google
+        Sign in with Google
       </Link>
       <form
         className="flex flex-col my-8 gap-4"
