@@ -1,4 +1,4 @@
-import Tile from "@/app/components/Tile";
+import Tile from "@/components/Tile";
 import { ITask } from "@task-manager/shared";
 
 interface TaskTileProps {

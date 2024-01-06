@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { fetcher } from "../helpers/fetcher";
+import { fetcher } from "../../helpers/fetcher";
 import { IFindAllWorkplacesResponse } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";

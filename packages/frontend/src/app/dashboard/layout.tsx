@@ -1,7 +1,7 @@
 "use client";
 
 import useSWRMutation from "swr/mutation";
-import { useUser } from "../hooks/useUser";
+import { useUser } from "../../hooks/useUser";
 import Link from "next/link";
 
 async function logout(url: string) {

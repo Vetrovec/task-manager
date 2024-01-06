@@ -24,6 +24,7 @@
     "eslint-config-next": "14.0.0",
     "postcss": "^8",
     "serve": "^14.2.1",
+    "sharp": "^0.33.1",
     "tailwindcss": "^3"
   }
 }

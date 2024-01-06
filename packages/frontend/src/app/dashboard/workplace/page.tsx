@@ -1,6 +1,6 @@
 "use client";
 
-import { fetcher } from "@/app/helpers/fetcher";
+import { fetcher } from "@/helpers/fetcher";
 import {
   IFindAllTasksResponse,
   IFindOneWorkplaceResponse,
@@ -10,12 +10,12 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
-import ActiveTaskTile from "@/app/components/ActiveTaskTile";
-import AvailableTaskTile from "@/app/components/AvailableTaskTile";
-import DialogCreateTask from "@/app/components/DialogCreateTask";
-import DialogAddUser from "@/app/components/DialogAddUser";
-import WorkplaceUserTile from "@/app/components/WorkplaceUserTile";
-import { useUser } from "@/app/hooks/useUser";
+import ActiveTaskTile from "@/components/ActiveTaskTile";
+import AvailableTaskTile from "@/components/AvailableTaskTile";
+import DialogCreateTask from "@/components/DialogCreateTask";
+import DialogAddUser from "@/components/DialogAddUser";
+import WorkplaceUserTile from "@/components/WorkplaceUserTile";
+import { useUser } from "@/hooks/useUser";
 
 async function addTask(
   url: string,

@@ -1,4 +1,4 @@
-import Tile from "@/app/components/Tile";
+import Tile from "@/components/Tile";
 import { IUser, UserWorkplaceRole } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import { mutationFetcher } from "../helpers/fetcher";
