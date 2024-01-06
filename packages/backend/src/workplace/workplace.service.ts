@@ -48,13 +48,10 @@ export class WorkplaceService {
       throw new NotFoundException(`Workplace with ID ${id} not found.`);
     }
 
-    let userWorkplaces: UserWorkplace[] = [];
-    if (userWorkplace.role.name === "Operator") {
-      userWorkplaces = await this.userWorkplaceRepository.find({
-        where: { workplace: { id } },
-        relations: ["user", "role"],
-      });
-    }
+    const userWorkplaces = await this.userWorkplaceRepository.find({
+      where: { workplace: { id } },
+      relations: ["user", "role"],
+    });
 
     return {
       workplace: userWorkplace.workplace,

@@ -43,11 +43,11 @@ export class TaskService {
   async findActiveTasks(workplaceId: number, user: User) {
     return this.taskRepository.find({
       where: {
-        workplace: { id: workplaceId },
-        status: "Open",
         user: {
           id: user.id,
         },
+        workplace: { id: workplaceId },
+        status: "Open",
       },
     });
   }
@@ -55,11 +55,12 @@ export class TaskService {
   async findCompletedTasks(workplaceId: number, user: User) {
     return this.taskRepository.find({
       where: {
-        workplace: { id: workplaceId },
         user: {
           id: user.id,
         },
+        workplace: { id: workplaceId },
         status: "Completed",
+        payroll: IsNull(),
       },
     });
   }
@@ -102,21 +103,8 @@ export class TaskService {
     if (!task) {
       throw new NotFoundException("Task not found");
     }
-
     if (task.user) {
       throw new BadRequestException("Task already assigned");
-    }
-
-    const userWorkplace = await this.userWorkplaceRepository.findOne({
-      where: {
-        user: { id: user.id },
-        workplace: { id: task.workplace.id },
-      },
-      relations: ["role"],
-    });
-
-    if (userWorkplace?.role.name !== "Worker") {
-      throw new BadRequestException("User is not an worker");
     }
 
     task.user = user;
@@ -148,9 +136,6 @@ export class TaskService {
 
     if (!task) {
       throw new NotFoundException("Task not found");
-    }
-    if (task.payroll) {
-      throw new BadRequestException("Task is already paid");
     }
     if (task.status !== "Open") {
       throw new BadRequestException("Task is not open");

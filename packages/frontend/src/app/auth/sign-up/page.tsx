@@ -1,35 +1,16 @@
 "use client";
 
+import { mutationFetcher } from "@/helpers/fetcher";
 import Link from "next/link";
 import { useState } from "react";
 import useSWRMutation from "swr/mutation";
 
-async function signup(
-  url: string,
-  { arg }: { arg: { displayName: string; email: string; password: string } },
-) {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: arg.email,
-        displayName: arg.displayName,
-        password: arg.password,
-      }),
-    });
-    return { success: response.ok };
-  } catch {
-    return { success: false };
-  }
-}
-
 export default function SignUp() {
   const { error, data, trigger } = useSWRMutation(
     "/api/v1/auth/signup",
-    signup,
+    mutationFetcher<{ email: string; displayName: string; password: string }>(
+      "POST",
+    ),
   );
 
   const [email, setEmail] = useState("");

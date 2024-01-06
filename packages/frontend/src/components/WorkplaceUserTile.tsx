@@ -7,18 +7,23 @@ interface WorkplaceUserTileProps {
   user: IUser;
   role: UserWorkplaceRole;
   workplaceId: string;
-  canDelete: boolean;
+  canManage: boolean;
 }
 
 export default function WorkplaceUserTile({
   user,
   role,
   workplaceId,
-  canDelete,
+  canManage,
 }: WorkplaceUserTileProps) {
-  const { trigger: triggerDelteTask } = useSWRMutation(
+  const { trigger: triggerDeleteTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/user/${user.id}`,
     mutationFetcher("DELETE"),
+  );
+
+  const { trigger: triggerPay } = useSWRMutation(
+    `/api/v1/workplace/${workplaceId}/payroll`,
+    mutationFetcher<{ userId: number }>("POST"),
   );
 
   return (
@@ -26,7 +31,12 @@ export default function WorkplaceUserTile({
       <p className="text-lg font-semibold">{user.displayName}</p>
       <p className="text-sm font-medium">{user.email}</p>
       <p className="text-sm font-medium text-gray-500">{role}</p>
-      {canDelete && <button onClick={() => triggerDelteTask()}>Delete</button>}
+      {canManage && (
+        <div className="flex justify-between items-center">
+          <button onClick={() => triggerPay({ userId: user.id })}>Pay</button>
+          <button onClick={() => triggerDeleteTask()}>Delete</button>
+        </div>
+      )}
     </Tile>
   );
 }

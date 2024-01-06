@@ -4,7 +4,7 @@ import Tile from "@/components/Tile";
 import { fetcher } from "@/helpers/fetcher";
 import { IFindAllTasksResponse } from "@task-manager/shared";
 import { useSearchParams } from "next/navigation";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 export default function History() {
   const searchParams = useSearchParams();
@@ -21,7 +21,7 @@ export default function History() {
 
   return (
     <Tile>
-      <div className="mb-4 font-semibold text-xl">History</div>
+      <div className="mb-4 font-semibold text-xl">Unpaid Tasks</div>
       {isLoading && <div>Loading...</div>}
       {data?.tasks.length === 0 && <div>No tasks</div>}
       {data?.tasks.length ? (

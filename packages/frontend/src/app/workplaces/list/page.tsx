@@ -1,32 +1,11 @@
 "use client";
 
 import useSWR from "swr";
-import { fetcher } from "@/helpers/fetcher";
+import { fetcher, mutationFetcher } from "@/helpers/fetcher";
 import { IFindAllWorkplacesResponse } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import Link from "next/link";
-
-async function createWorkplace(
-  url: string,
-  { arg }: { arg: { name: string; text: string } },
-) {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: arg.name,
-        text: arg.text,
-      }),
-    });
-    return { success: response.ok };
-  } catch {
-    return { success: false };
-  }
-}
 
 export default function Dashboard() {
   const { data, isLoading } = useSWR<IFindAllWorkplacesResponse>(
@@ -34,7 +13,10 @@ export default function Dashboard() {
     fetcher,
   );
 
-  const { trigger } = useSWRMutation("/api/v1/workplace", createWorkplace);
+  const { trigger } = useSWRMutation(
+    "/api/v1/workplace",
+    mutationFetcher<{ name: string; text: string }>("POST"),
+  );
 
   const [showCreateWorkplace, setShowCreateWorkplace] = useState(false);
   const [name, setName] = useState("");

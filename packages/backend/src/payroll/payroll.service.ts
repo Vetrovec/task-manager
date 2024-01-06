@@ -59,7 +59,7 @@ export class PayrollService {
           id: workplaceId,
         },
         user: {
-          id: dto.userId,
+          id: user.id,
         },
       },
       relations: ["role"],
@@ -83,8 +83,8 @@ export class PayrollService {
 
     const payroll = this.payrollRepository.create({
       createdBy: user,
-      beneficiary: userWorkplace.user,
-      workplace: userWorkplace.workplace,
+      beneficiary: { id: dto.userId },
+      workplace: { id: workplaceId },
       total,
       tasks,
     });

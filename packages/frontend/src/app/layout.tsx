@@ -1,12 +1,15 @@
 "use client";
 
 import "./globals.css";
+import "react-toastify/dist/ReactToastify.css";
+
 import { Poppins } from "next/font/google";
+import { ToastContainer } from "react-toastify";
 import useSWR from "swr";
 import { IGetMeResponse } from "@task-manager/shared";
-import { fetcher } from "@/helpers/fetcher";
-import { UserContext } from "@/contexts/UserContext";
 import Loading from "@/components/Loading";
+import { UserContext } from "@/contexts/UserContext";
+import { fetcher } from "@/helpers/fetcher";
 
 const inter = Poppins({
   subsets: ["latin"],
@@ -30,6 +33,7 @@ export default function RootLayout({
         <meta name="description" content="Unicorn University project" />
       </head>
       <body className={inter.className}>
+        <ToastContainer position="bottom-right" />
         {isLoading ? (
           <Loading />
         ) : (

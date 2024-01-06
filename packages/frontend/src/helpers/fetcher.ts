@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 export const fetcher = async (...args: Parameters<typeof fetch>) => {
   const response = await fetch(...args);
   if (!response.ok) {
@@ -6,16 +8,28 @@ export const fetcher = async (...args: Parameters<typeof fetch>) => {
   return response.json();
 };
 
-export const mutationFetcher = (method: string) => async (url: string) => {
-  try {
-    const response = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return { success: response.ok };
-  } catch {
-    return { success: false };
-  }
-};
+export const mutationFetcher =
+  <TArgs>(method: string, operationName: string | null = null) =>
+  async (url: string, options?: { arg: TArgs } | null) => {
+    let success: boolean;
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: options?.arg && JSON.stringify(options.arg),
+      });
+      success = response.ok;
+    } catch {
+      success = false;
+    }
+
+    if (success) {
+      toast.success(`${operationName ?? "Operation"} successful!`);
+    } else {
+      toast.error(`${operationName ?? "Operation"} failed!`);
+    }
+
+    return { success };
+  };

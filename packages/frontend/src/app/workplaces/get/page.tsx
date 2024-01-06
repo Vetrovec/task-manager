@@ -1,6 +1,6 @@
 "use client";
 
-import { fetcher } from "@/helpers/fetcher";
+import { fetcher, mutationFetcher } from "@/helpers/fetcher";
 import {
   IFindAllTasksResponse,
   IFindOneWorkplaceResponse,
@@ -16,49 +16,6 @@ import DialogCreateTask from "@/components/DialogCreateTask";
 import DialogAddUser from "@/components/DialogAddUser";
 import WorkplaceUserTile from "@/components/WorkplaceUserTile";
 import { useUser } from "@/hooks/useUser";
-
-async function addTask(
-  url: string,
-  { arg }: { arg: { email: string; role: UserWorkplaceRole } },
-) {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: arg.email,
-        role: arg.role,
-      }),
-    });
-    return { success: response.ok };
-  } catch {
-    return { success: false };
-  }
-}
-
-async function createTask(
-  url: string,
-  { arg }: { arg: { name: string; description: string; price: number } },
-) {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: arg.name,
-        description: arg.description,
-        price: arg.price,
-      }),
-    });
-    return { success: response.ok };
-  } catch {
-    return { success: false };
-  }
-}
 
 export default function Workplace() {
   const searchParams = useSearchParams();
@@ -80,7 +37,6 @@ export default function Workplace() {
     (target) => target.user.id === user.id,
   );
   const isOperator = currentWorkplaceUser?.role === "Operator";
-  const isWorker = currentWorkplaceUser?.role === "Worker";
 
   const { data: activeTasksData, isLoading: isLoadingActiveTasks } =
     useSWR<IFindAllTasksResponse>(
@@ -98,12 +54,14 @@ export default function Workplace() {
 
   const { trigger: triggerAddUser } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/user`,
-    addTask,
+    mutationFetcher<{ email: string; role: UserWorkplaceRole }>("POST"),
   );
 
   const { trigger: triggerCreateTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task`,
-    createTask,
+    mutationFetcher<{ name: string; description: string; price: number }>(
+      "POST",
+    ),
   );
 
   const [showAddUser, setShowAddUser] = useState(false);
@@ -155,42 +113,34 @@ export default function Workplace() {
             </button>
           </div>
           {workplaceData?.users.map(({ user: target, role }) => {
-            const canDelete = isOperator && target.id !== user.id;
+            const canManage = isOperator && target.id !== user.id;
             return (
               <WorkplaceUserTile
                 key={target.id}
                 user={target}
                 role={role}
                 workplaceId={workplaceId}
-                canDelete={canDelete}
+                canManage={canManage}
               />
             );
           })}
         </>
       )}
-      {isWorker && (
-        <>
-          <div className="flex col-span-3 p-4 bg-white rounded-xl">
-            <div className="font-semibold text-lg">Active Tasks</div>
-          </div>
-          {!activeTasks?.length && (
-            <div className="col-span-3 p-4 bg-white rounded-xl">
-              <p className="text-center text-lg font-semibold">
-                {isLoadingActiveTasks
-                  ? "Loading..."
-                  : "You don't have any active tasks"}
-              </p>
-            </div>
-          )}
-          {activeTasks?.map((task) => (
-            <ActiveTaskTile
-              key={task.id}
-              task={task}
-              workplaceId={workplaceId}
-            />
-          ))}
-        </>
+      <div className="flex col-span-3 p-4 bg-white rounded-xl">
+        <div className="font-semibold text-lg">Active Tasks</div>
+      </div>
+      {!activeTasks?.length && (
+        <div className="col-span-3 p-4 bg-white rounded-xl">
+          <p className="text-center">
+            {isLoadingActiveTasks
+              ? "Loading..."
+              : "You currently have to active tasks"}
+          </p>
+        </div>
       )}
+      {activeTasks?.map((task) => (
+        <ActiveTaskTile key={task.id} task={task} workplaceId={workplaceId} />
+      ))}
       <div className="flex col-span-3 justify-between p-4 bg-white rounded-xl">
         <div className="font-semibold text-lg">Available Tasks</div>
         {isOperator && (
@@ -204,7 +154,7 @@ export default function Workplace() {
       </div>
       {!availableTasks?.length && (
         <div className="col-span-3 p-4 bg-white rounded-xl">
-          <p className="text-center text-lg font-semibold">
+          <p className="text-center">
             {isLoadingAvailableTasks
               ? "Loading..."
               : "There are currently no tasks available"}
@@ -216,7 +166,6 @@ export default function Workplace() {
           key={task.id}
           task={task}
           workplaceId={workplaceId}
-          canClaim={isWorker}
           canDelete={isOperator}
         />
       ))}

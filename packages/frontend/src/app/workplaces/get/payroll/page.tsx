@@ -26,7 +26,7 @@ export default function Payroll() {
 
   return (
     <Tile>
-      <div className="mb-4 font-semibold text-xl">Payrolls</div>
+      <div className="mb-4 font-semibold text-xl">Payroll List</div>
       {isLoading && <div>Loading...</div>}
       {data?.payrolls.length === 0 && <div>No payrolls</div>}
       {data?.payrolls.length ? (
@@ -37,7 +37,7 @@ export default function Payroll() {
                 Date
               </th>
               <th align="right" className="font-semibold">
-                Price
+                Amount
               </th>
             </tr>
           </thead>
