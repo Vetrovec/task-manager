@@ -6,7 +6,6 @@ import {
 import { Task } from "@/entities/task.entity";
 import { IsNull, Repository } from "typeorm";
 import { CreateTaskDto } from "./dtos/CreateTask.dto";
-import { UpdateTaskDto } from "./dtos/UpdateTask.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "@/entities/user.entity";
 import { UserWorkplace } from "@/entities/user-workplace.entity";
@@ -41,7 +40,7 @@ export class TaskService {
     });
   }
 
-  findActiveTasks(workplaceId: number, user: User) {
+  async findActiveTasks(workplaceId: number, user: User) {
     return this.taskRepository.find({
       where: {
         workplace: { id: workplaceId },
@@ -53,8 +52,20 @@ export class TaskService {
     });
   }
 
-  findTaskById(id: number) {
-    return this.taskRepository.findOne({ where: { id } });
+  async findCompletedTasks(workplaceId: number, user: User) {
+    return this.taskRepository.find({
+      where: {
+        workplace: { id: workplaceId },
+        user: {
+          id: user.id,
+        },
+        status: "Completed",
+      },
+    });
+  }
+
+  async findTaskById(taskId: number) {
+    return this.taskRepository.findOne({ where: { id: taskId } });
   }
 
   async createTask(workplaceId: number, dto: CreateTaskDto, user: User) {
@@ -114,11 +125,11 @@ export class TaskService {
 
   async completeTask(taskId: number, user: User): Promise<Task> {
     const task = await this.taskRepository.findOne({
-      where: { id: taskId },
+      where: { id: taskId, user: { id: user.id } },
       relations: ["user"],
     });
 
-    if (task?.user?.id !== user.id) {
+    if (!task) {
       throw new NotFoundException("Task not found");
     }
     if (task.status !== "Open") {
@@ -131,39 +142,49 @@ export class TaskService {
 
   async cancelTask(taskId: number, user: User): Promise<Task> {
     const task = await this.taskRepository.findOne({
-      where: { id: taskId },
+      where: { id: taskId, user: { id: user.id } },
       relations: ["user"],
     });
 
-    if (task?.user?.id !== user.id) {
+    if (!task) {
       throw new NotFoundException("Task not found");
     }
+    if (task.payroll) {
+      throw new BadRequestException("Task is already paid");
+    }
+    if (task.status !== "Open") {
+      throw new BadRequestException("Task is not open");
+    }
 
-    task.status = "Cancelled";
+    task.user = null;
     return this.taskRepository.save(task);
   }
 
-  async updateTask(
-    id: number,
-    updateTask: UpdateTaskDto,
-  ): Promise<Task | null> {
-    await this.taskRepository.update(id, {
-      name: updateTask.name,
-      description: updateTask.description,
-      price: updateTask.price,
-      status: updateTask.status,
+  async deleteTask(taskId: number, user: User): Promise<void> {
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: ["workplace"],
     });
 
-    return this.taskRepository.findOne({ where: { id } });
-  }
+    if (!task) {
+      throw new NotFoundException("Task not found");
+    }
 
-  async deleteTask(id: number): Promise<void> {
-    const task = await this.taskRepository.findOne({ where: { id } });
+    const userWorkplace = await this.userWorkplaceRepository.findOne({
+      where: {
+        user: { id: user.id },
+        workplace: { id: task.workplace.id },
+      },
+      relations: ["role"],
+    });
 
+    if (userWorkplace?.role.name !== "Operator") {
+      throw new BadRequestException("User is not an operator");
+    }
     if (task?.status !== "Open") {
       throw new BadRequestException("Task is not open");
     }
 
-    await this.taskRepository.delete(id);
+    await this.taskRepository.delete(taskId);
   }
 }

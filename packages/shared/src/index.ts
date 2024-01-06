@@ -1,6 +1,7 @@
 export * from "./app.types";
 export * from "./auth.types";
 export * from "./enums.types";
+export * from "./payroll.types";
 export * from "./role.types";
 export * from "./task.types";
 export * from "./user-workplace.types";

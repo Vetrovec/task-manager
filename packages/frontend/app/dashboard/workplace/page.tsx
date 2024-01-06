@@ -10,13 +10,12 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
-import ClaimableTaskTile from "./components/ClaimableTask";
-import ActiveTaskTile from "./components/ActiveTask";
-import DialogCreateTask from "./components/DialogCreateTask";
-import DialogAddUser from "./components/DialogAddUser";
-import UserTile from "./components/UserTile";
+import ActiveTaskTile from "@/app/components/ActiveTaskTile";
+import AvailableTaskTile from "@/app/components/AvailableTaskTile";
+import DialogCreateTask from "@/app/components/DialogCreateTask";
+import DialogAddUser from "@/app/components/DialogAddUser";
+import WorkplaceUserTile from "@/app/components/WorkplaceUserTile";
 import { useUser } from "@/app/hooks/useUser";
-import TaskTile from "./components/TaskTile";
 
 async function addTask(
   url: string,
@@ -63,16 +62,19 @@ async function createTask(
 
 export default function Workplace() {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+  const workplaceId = searchParams.get("id");
 
   const user = useUser();
 
-  if (!id) {
+  if (!workplaceId) {
     throw new Error("Missing workplace id");
   }
 
   const { data: workplaceData, isLoading: isLoadingWorkplace } =
-    useSWR<IFindOneWorkplaceResponse>(`/api/v1/workplace/${id}`, fetcher);
+    useSWR<IFindOneWorkplaceResponse>(
+      `/api/v1/workplace/${workplaceId}`,
+      fetcher,
+    );
 
   const currentWorkplaceUser = workplaceData?.users.find(
     (target) => target.user.id === user.id,
@@ -82,25 +84,25 @@ export default function Workplace() {
 
   const { data: activeTasksData, isLoading: isLoadingActiveTasks } =
     useSWR<IFindAllTasksResponse>(
-      `/api/v1/workplace/${id}/task/active`,
+      `/api/v1/workplace/${workplaceId}/task/active`,
       fetcher,
     );
   const activeTasks = activeTasksData?.tasks;
 
   const { data: availableTasksData, isLoading: isLoadingAvailableTasks } =
     useSWR<IFindAllTasksResponse>(
-      `/api/v1/workplace/${id}/task/available`,
+      `/api/v1/workplace/${workplaceId}/task/available`,
       fetcher,
     );
   const availableTasks = availableTasksData?.tasks;
 
   const { trigger: triggerAddUser } = useSWRMutation(
-    `/api/v1/workplace/${id}/user`,
+    `/api/v1/workplace/${workplaceId}/user`,
     addTask,
   );
 
   const { trigger: triggerCreateTask } = useSWRMutation(
-    `/api/v1/workplace/${id}/task`,
+    `/api/v1/workplace/${workplaceId}/task`,
     createTask,
   );
 
@@ -152,9 +154,18 @@ export default function Workplace() {
               + Add User
             </button>
           </div>
-          {workplaceData?.users.map(({ user, role }) => (
-            <UserTile key={user.id} user={user} role={role} />
-          ))}
+          {workplaceData?.users.map(({ user: target, role }) => {
+            const canDelete = isOperator && target.id !== user.id;
+            return (
+              <WorkplaceUserTile
+                key={target.id}
+                user={target}
+                role={role}
+                workplaceId={workplaceId}
+                canDelete={canDelete}
+              />
+            );
+          })}
         </>
       )}
       {isWorker && (
@@ -172,7 +183,11 @@ export default function Workplace() {
             </div>
           )}
           {activeTasks?.map((task) => (
-            <ActiveTaskTile key={task.id} task={task} workplaceId={id} />
+            <ActiveTaskTile
+              key={task.id}
+              task={task}
+              workplaceId={workplaceId}
+            />
           ))}
         </>
       )}
@@ -196,13 +211,15 @@ export default function Workplace() {
           </p>
         </div>
       )}
-      {availableTasks?.map((task) =>
-        isWorker ? (
-          <ClaimableTaskTile key={task.id} task={task} workplaceId={id} />
-        ) : (
-          <TaskTile key={task.id} task={task} />
-        ),
-      )}
+      {availableTasks?.map((task) => (
+        <AvailableTaskTile
+          key={task.id}
+          task={task}
+          workplaceId={workplaceId}
+          canClaim={isWorker}
+          canDelete={isOperator}
+        />
+      ))}
     </div>
   );
 }

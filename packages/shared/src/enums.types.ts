@@ -1,3 +1,3 @@
-export type TaskStatus = "Open" | "Completed" | "Cancelled";
+export type TaskStatus = "Open" | "Completed";
 
 export type UserWorkplaceRole = "Operator" | "Worker";

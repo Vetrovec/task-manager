@@ -6,9 +6,12 @@ import { WorkplaceService } from "./workplace.service";
 import { UserWorkplace } from "@/entities/user-workplace.entity";
 import { Role } from "@/entities/role.entity";
 import { User } from "@/entities/user.entity";
+import { Task } from "@/entities/task.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Role, User, UserWorkplace, Workplace])],
+  imports: [
+    TypeOrmModule.forFeature([Role, Task, User, UserWorkplace, Workplace]),
+  ],
   controllers: [WorkplaceController],
   providers: [WorkplaceService],
 })

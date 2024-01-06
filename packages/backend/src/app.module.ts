@@ -30,7 +30,7 @@ import appConfig from "./config/app.config";
     AuthModule,
     TaskModule,
     UserModule,
-    WorkplaceModule
+    WorkplaceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

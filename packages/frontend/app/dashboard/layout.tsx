@@ -2,6 +2,7 @@
 
 import useSWRMutation from "swr/mutation";
 import { useUser } from "../hooks/useUser";
+import Link from "next/link";
 
 async function logout(url: string) {
   try {
@@ -28,10 +29,12 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="h-full p-4 bg-zinc-400">
+    <div className="h-full p-4">
       <div className="flex h-full gap-4">
         <div className="w-28 h-full py-4 bg-blue-500 rounded-xl">
-          <div className="text-center text-white">Dashboard</div>
+          <Link href="/dashboard">
+            <div className="text-center text-white">Dashboard</div>
+          </Link>
         </div>
         <div className="flex flex-col flex-auto gap-4">
           <div className="flex w-full h-16 px-4 justify-between items-center bg-white rounded-xl">

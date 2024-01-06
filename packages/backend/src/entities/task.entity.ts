@@ -1,7 +1,14 @@
 import { ITask, TaskStatus } from "@task-manager/shared";
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  CreateDateColumn,
+} from "typeorm";
 import { Workplace } from "./workplace.entity"; // Adjust the import path as needed
 import { User } from "./user.entity";
+import { Payroll } from "./payroll.entity";
 
 @Entity()
 export class Task implements ITask {
@@ -20,6 +27,9 @@ export class Task implements ITask {
   @Column()
   status: TaskStatus;
 
+  @CreateDateColumn()
+  createdAt: Date;
+
   @ManyToOne(() => User, (user) => user.tasks, { nullable: true })
   user: User | null;
 
@@ -27,4 +37,7 @@ export class Task implements ITask {
     nullable: false,
   })
   workplace: Workplace;
+
+  @ManyToOne(() => Payroll, (payroll) => payroll.tasks, { nullable: true })
+  payroll: Payroll | null;
 }

@@ -1,20 +1,7 @@
 import { ITask } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import TaskTile from "./TaskTile";
-
-async function patchTask(url: string) {
-  try {
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return { success: response.ok };
-  } catch {
-    return { success: false };
-  }
-}
+import { mutationFetcher } from "../helpers/fetcher";
 
 interface ActiveTaskTileProps {
   task: ITask;
@@ -27,12 +14,12 @@ export default function ActiveTaskTile({
 }: ActiveTaskTileProps) {
   const { trigger: triggerCompleteTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task/${task.id}/complete`,
-    patchTask,
+    mutationFetcher("PATCH"),
   );
 
   const { trigger: triggerCancelTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task/${task.id}/cancel`,
-    patchTask,
+    mutationFetcher("PATCH"),
   );
 
   return (

@@ -4,14 +4,11 @@ import {
   Get,
   Param,
   Post,
-  Put,
   Delete,
-  NotFoundException,
   ParseIntPipe,
   UseGuards,
 } from "@nestjs/common";
 import { CreateWorkplaceDto } from "./dtos/CreateWorkplace.dto";
-import { UpdateWorkplaceDto } from "./dtos/UpdateWorkplace.dto";
 import { WorkplaceService } from "./workplace.service";
 import {
   IFindAllWorkplacesResponse,
@@ -53,30 +50,6 @@ export class WorkplaceController {
     return this.workplaceService.create(createWorkplaceDto, user);
   }
 
-  @Put(":id")
-  async update(
-    @AuthUser() user: User,
-    @Param("id", ParseIntPipe) workplaceId: number,
-    @Body() updateWorkplaceDto: UpdateWorkplaceDto,
-  ) {
-    const updatedWorkplace = await this.workplaceService.update(
-      workplaceId,
-      updateWorkplaceDto,
-      user,
-    );
-    if (!updatedWorkplace) {
-      throw new NotFoundException(
-        `Workplace with ID ${workplaceId} not found.`,
-      );
-    }
-    return updatedWorkplace;
-  }
-
-  @Delete(":workplaceId")
-  async delete(@Param("workplaceId", ParseIntPipe) workplaceId: number) {
-    await this.workplaceService.delete(workplaceId);
-  }
-
   @Post(":workplaceId/user")
   async addUser(
     @AuthUser() user: User,
@@ -84,5 +57,14 @@ export class WorkplaceController {
     @Body() addUserDto: AddUserDto,
   ) {
     await this.workplaceService.addUser(workplaceId, addUserDto, user);
+  }
+
+  @Delete(":workplaceId/user/:userId")
+  async deleteUser(
+    @AuthUser() user: User,
+    @Param("workplaceId", ParseIntPipe) workplaceId: number,
+    @Param("userId", ParseIntPipe) userId: number,
+  ) {
+    await this.workplaceService.deleteUser(workplaceId, userId, user);
   }
 }

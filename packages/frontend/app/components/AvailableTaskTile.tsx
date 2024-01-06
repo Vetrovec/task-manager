@@ -1,38 +1,35 @@
 import { ITask } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import TaskTile from "./TaskTile";
-
-async function claimTask(url: string) {
-  try {
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return { success: response.ok };
-  } catch {
-    return { success: false };
-  }
-}
+import { mutationFetcher } from "../helpers/fetcher";
 
 interface ClaimableTaskTileProps {
   task: ITask;
   workplaceId: string;
+  canClaim: boolean;
+  canDelete: boolean;
 }
 
 export default function ClaimableTaskTile({
   task,
   workplaceId,
+  canClaim,
+  canDelete,
 }: ClaimableTaskTileProps) {
   const { trigger: triggerClaimTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task/${task.id}/claim`,
-    claimTask,
+    mutationFetcher("PATCH"),
+  );
+
+  const { trigger: triggerDelteTask } = useSWRMutation(
+    `/api/v1/workplace/${workplaceId}/task/${task.id}`,
+    mutationFetcher("DELETE"),
   );
 
   return (
     <TaskTile task={task}>
-      <button onClick={() => triggerClaimTask()}>Claim</button>
+      {canClaim && <button onClick={() => triggerClaimTask()}>Claim</button>}
+      {canDelete && <button onClick={() => triggerDelteTask()}>Delete</button>}
     </TaskTile>
   );
 }
