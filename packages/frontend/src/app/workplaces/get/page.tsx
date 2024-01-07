@@ -4,7 +4,6 @@ import { fetcher, mutationFetcher } from "@/helpers/fetcher";
 import {
   IFindAllTasksResponse,
   IFindOneWorkplaceResponse,
-  UserWorkplaceRole,
 } from "@task-manager/shared";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -13,9 +12,8 @@ import useSWRMutation from "swr/mutation";
 import ActiveTaskTile from "@/components/ActiveTaskTile";
 import AvailableTaskTile from "@/components/AvailableTaskTile";
 import DialogCreateTask from "@/components/DialogCreateTask";
-import DialogAddUser from "@/components/DialogAddUser";
-import WorkplaceUserTile from "@/components/WorkplaceUserTile";
 import { useUser } from "@/hooks/useUser";
+import Button from "@/components/Button";
 
 export default function Workplace() {
   const searchParams = useSearchParams();
@@ -52,11 +50,6 @@ export default function Workplace() {
     );
   const availableTasks = availableTasksData?.tasks;
 
-  const { trigger: triggerAddUser } = useSWRMutation(
-    `/api/v1/workplace/${workplaceId}/user`,
-    mutationFetcher<{ email: string; role: UserWorkplaceRole }>("POST"),
-  );
-
   const { trigger: triggerCreateTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task`,
     mutationFetcher<{ name: string; description: string; price: number }>(
@@ -72,103 +65,69 @@ export default function Workplace() {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-4">
-      <DialogAddUser
-        open={showAddUser}
-        onClose={() => setShowAddUser(false)}
-        onSubmit={(e) =>
-          triggerAddUser({
-            email: e.email,
-            role: e.role,
-          })
-        }
-      />
+    <div className="flex flex-col gap-4">
       <DialogCreateTask
         open={showCreateTask}
         onClose={() => setShowCreateTask(false)}
-        onSubmit={(e) =>
+        onSubmit={(e) => {
+          setShowCreateTask(false);
           triggerCreateTask({
             name: e.name,
             description: e.description,
             price: e.price,
-          })
-        }
+          });
+        }}
       />
-      <div className="flex col-span-3 justify-between items-center p-4 bg-white rounded-xl">
-        <div className="text-xl">
-          {isLoadingWorkplace
-            ? "Loading..."
-            : workplaceData?.workplace.name ?? "Workplace"}
+
+      <div className="p-4 bg-white rounded-xl">
+        <div className="flex justify-between pb-2 border-b-2 mb-4">
+          <div className="font-semibold text-lg">Active Tasks</div>
         </div>
-      </div>
-      {isOperator && (
-        <>
-          <div className="flex col-span-3 justify-between p-4 bg-white rounded-xl">
-            <div className="font-semibold text-lg">Users</div>
-            <button
-              className="font-semibold text-lg"
-              onClick={() => setShowAddUser(true)}
-            >
-              + Add User
-            </button>
-          </div>
-          {workplaceData?.users.map(({ user: target, role }) => {
-            const canManage = isOperator && target.id !== user.id;
-            return (
-              <WorkplaceUserTile
-                key={target.id}
-                user={target}
-                role={role}
-                workplaceId={workplaceId}
-                canManage={canManage}
-              />
-            );
-          })}
-        </>
-      )}
-      <div className="flex col-span-3 p-4 bg-white rounded-xl">
-        <div className="font-semibold text-lg">Active Tasks</div>
-      </div>
-      {!activeTasks?.length && (
-        <div className="col-span-3 p-4 bg-white rounded-xl">
+        {!activeTasks?.length && (
           <p className="text-center">
-            {isLoadingActiveTasks
+            {isLoadingAvailableTasks
               ? "Loading..."
-              : "You currently have to active tasks"}
+              : "You currently don't have any active tasks"}
           </p>
-        </div>
-      )}
-      {activeTasks?.map((task) => (
-        <ActiveTaskTile key={task.id} task={task} workplaceId={workplaceId} />
-      ))}
-      <div className="flex col-span-3 justify-between p-4 bg-white rounded-xl">
-        <div className="font-semibold text-lg">Available Tasks</div>
-        {isOperator && (
-          <button
-            className="font-semibold text-lg"
-            onClick={() => setShowCreateTask(true)}
-          >
-            + New Task
-          </button>
         )}
+        <div className="grid grid-cols-3 gap-4">
+          {activeTasks?.map((task) => (
+            <ActiveTaskTile
+              key={task.id}
+              variant="nested"
+              task={task}
+              workplaceId={workplaceId}
+            />
+          ))}
+        </div>
       </div>
-      {!availableTasks?.length && (
-        <div className="col-span-3 p-4 bg-white rounded-xl">
+
+      <div className="p-4 bg-white rounded-xl">
+        <div className="flex justify-between pb-2 border-b-2 mb-4">
+          <div className="font-semibold text-lg">Available Tasks</div>
+          {isOperator && (
+            <Button onClick={() => setShowCreateTask(true)}>+ New Task</Button>
+          )}
+        </div>
+        {!availableTasks?.length && (
           <p className="text-center">
             {isLoadingAvailableTasks
               ? "Loading..."
               : "There are currently no tasks available"}
           </p>
+        )}
+        <div className="grid grid-cols-3 gap-4">
+          {availableTasks?.map((task) => (
+            <AvailableTaskTile
+              key={task.id}
+              variant="nested"
+              task={task}
+              workplaceId={workplaceId}
+              canDelete={isOperator}
+            />
+          ))}
         </div>
-      )}
-      {availableTasks?.map((task) => (
-        <AvailableTaskTile
-          key={task.id}
-          task={task}
-          workplaceId={workplaceId}
-          canDelete={isOperator}
-        />
-      ))}
+      </div>
     </div>
   );
 }

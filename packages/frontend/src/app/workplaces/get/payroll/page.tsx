@@ -26,7 +26,9 @@ export default function Payroll() {
 
   return (
     <Tile>
-      <div className="mb-4 font-semibold text-xl">Payroll List</div>
+      <div className="pb-2 border-b-2 mb-4">
+        <div className="font-semibold text-xl">Payroll List</div>
+      </div>
       {isLoading && <div>Loading...</div>}
       {data?.payrolls.length === 0 && <div>No payrolls</div>}
       {data?.payrolls.length ? (

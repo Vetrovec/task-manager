@@ -5,11 +5,13 @@ import { mutationFetcher } from "../helpers/fetcher";
 import { mutate } from "swr";
 
 interface ActiveTaskTileProps {
+  variant?: "nested" | "default";
   task: ITask;
   workplaceId: string;
 }
 
 export default function ActiveTaskTile({
+  variant,
   task,
   workplaceId,
 }: ActiveTaskTileProps) {
@@ -39,11 +41,23 @@ export default function ActiveTaskTile({
   );
 
   return (
-    <TaskTile task={task}>
-      <div className="flex justify-between items-center">
-        <button onClick={() => triggerCompleteTask()}>Complete</button>
-        <button onClick={() => triggerCancelTask()}>Cancel</button>
-      </div>
-    </TaskTile>
+    <TaskTile
+      variant={variant}
+      task={task}
+      actions={[
+        { id: "complete", title: "Complete" },
+        { id: "cancel", title: "Cancel" },
+      ]}
+      onAction={(actionId) => {
+        switch (actionId) {
+          case "complete":
+            triggerCompleteTask();
+            break;
+          case "cancel":
+            triggerCancelTask();
+            break;
+        }
+      }}
+    />
   );
 }

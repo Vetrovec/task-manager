@@ -6,6 +6,7 @@ import { IFindAllWorkplacesResponse } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import Link from "next/link";
+import Button from "@/components/Button";
 
 export default function Dashboard() {
   const { data, isLoading } = useSWR<IFindAllWorkplacesResponse>(
@@ -74,12 +75,9 @@ export default function Dashboard() {
         </form>
       </dialog>
       <div className="flex col-span-3 justify-end p-4 bg-white rounded-xl">
-        <button
-          className="font-semibold text-lg"
-          onClick={() => setShowCreateWorkplace(true)}
-        >
+        <Button onClick={() => setShowCreateWorkplace(true)}>
           + New Workplace
-        </button>
+        </Button>
       </div>
       {!data?.workplaces.length && (
         <div className="col-span-3 p-4 bg-white rounded-xl">

@@ -1,18 +1,17 @@
 import Tile from "@/components/Tile";
 import { ITask } from "@task-manager/shared";
+import { ActionTile } from "./ActionTile";
 
-interface TaskTileProps {
+interface TaskTileProps extends React.ComponentProps<typeof ActionTile> {
   task: ITask;
-  children?: React.ReactNode;
 }
 
-export default function TaskTile({ children, task }: TaskTileProps) {
+export default function TaskTile({ task, children, ...rest }: TaskTileProps) {
   return (
-    <Tile>
+    <ActionTile {...rest}>
       <p className="text-lg font-semibold">{task.name}</p>
       <p className="text-sm font-medium text-gray-500">{task.description}</p>
       <p className="text-xs font-medium text-gray-500">{task.price}</p>
-      {children}
-    </Tile>
+    </ActionTile>
   );
 }

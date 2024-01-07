@@ -5,12 +5,14 @@ import { mutationFetcher } from "../helpers/fetcher";
 import { mutate } from "swr";
 
 interface ClaimableTaskTileProps {
+  variant?: "nested" | "default";
   task: ITask;
   workplaceId: string;
   canDelete: boolean;
 }
 
 export default function ClaimableTaskTile({
+  variant,
   task,
   workplaceId,
   canDelete,
@@ -40,13 +42,23 @@ export default function ClaimableTaskTile({
   );
 
   return (
-    <TaskTile task={task}>
-      <div className="flex justify-between items-center">
-        <button onClick={() => triggerClaimTask()}>Claim</button>
-        {canDelete && (
-          <button onClick={() => triggerDelteTask()}>Delete</button>
-        )}
-      </div>
-    </TaskTile>
+    <TaskTile
+      variant={variant}
+      task={task}
+      actions={[
+        { id: "claim", title: "Claim" },
+        ...(canDelete ? [{ id: "delete", title: "Delete" }] : []),
+      ]}
+      onAction={(actionId) => {
+        switch (actionId) {
+          case "claim":
+            triggerClaimTask();
+            break;
+          case "delete":
+            triggerDelteTask();
+            break;
+        }
+      }}
+    />
   );
 }

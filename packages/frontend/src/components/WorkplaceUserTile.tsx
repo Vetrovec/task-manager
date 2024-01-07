@@ -2,19 +2,26 @@ import Tile from "@/components/Tile";
 import { IUser, UserWorkplaceRole } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import { mutationFetcher } from "../helpers/fetcher";
+import { ActionTile } from "./ActionTile";
 
 interface WorkplaceUserTileProps {
-  user: IUser;
+  variant?: "nested" | "default";
+  canPay: boolean;
+  canRemove: boolean;
+  isMe: boolean;
   role: UserWorkplaceRole;
+  user: IUser;
   workplaceId: string;
-  canManage: boolean;
 }
 
 export default function WorkplaceUserTile({
-  user,
+  variant,
+  canPay,
+  canRemove,
+  isMe,
   role,
+  user,
   workplaceId,
-  canManage,
 }: WorkplaceUserTileProps) {
   const { trigger: triggerDeleteTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/user/${user.id}`,
@@ -27,16 +34,32 @@ export default function WorkplaceUserTile({
   );
 
   return (
-    <Tile>
-      <p className="text-lg font-semibold">{user.displayName}</p>
-      <p className="text-sm font-medium">{user.email}</p>
+    <ActionTile
+      variant={variant}
+      actions={
+        canPay || canRemove
+          ? [
+              { id: "pay", title: "Pay", disabled: !canPay },
+              { id: "remove", title: "Remove", disabled: !canRemove },
+            ]
+          : []
+      }
+      onAction={(actionId) => {
+        switch (actionId) {
+          case "pay":
+            triggerPay({ userId: user.id });
+            break;
+          case "remove":
+            triggerDeleteTask();
+            break;
+        }
+      }}
+    >
+      <p className="text-lg font-semibold">
+        {isMe && <span className="text-sm text-blue-500">(You)&nbsp;</span>}
+        {user.displayName}
+      </p>
       <p className="text-sm font-medium text-gray-500">{role}</p>
-      {canManage && (
-        <div className="flex justify-between items-center">
-          <button onClick={() => triggerPay({ userId: user.id })}>Pay</button>
-          <button onClick={() => triggerDeleteTask()}>Delete</button>
-        </div>
-      )}
-    </Tile>
+    </ActionTile>
   );
 }
