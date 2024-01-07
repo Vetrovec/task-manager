@@ -1,5 +1,5 @@
 import { ICreateTaskRequest } from "@task-manager/shared";
-import { IsString, IsNumber, IsIn, IsNotEmpty } from "class-validator";
+import { IsString, IsNumber, IsNotEmpty } from "class-validator";
 
 export class CreateTaskDto implements ICreateTaskRequest {
   @IsNotEmpty()
@@ -11,7 +11,4 @@ export class CreateTaskDto implements ICreateTaskRequest {
 
   @IsNumber()
   price: number;
-
-  @IsIn(["open", "closed"])
-  status: "open" | "closed";
 }

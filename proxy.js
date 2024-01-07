@@ -11,9 +11,17 @@ function getTarget(req) {
 }
 
 function handler(req, res) {
-  proxy.web(req, res, {
-    target: getTarget(req),
-  });
+  proxy.web(
+    req,
+    res,
+    {
+      target: getTarget(req),
+    },
+    () => {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "proxy_error" }));
+    },
+  );
 }
 
 const server = http.createServer(handler);

@@ -4,62 +4,67 @@ import {
   Get,
   Param,
   Post,
-  Put,
   Delete,
-  NotFoundException,
   ParseIntPipe,
+  UseGuards,
 } from "@nestjs/common";
 import { CreateWorkplaceDto } from "./dtos/CreateWorkplace.dto";
-import { UpdateWorkplaceDto } from "./dtos/UpdateWorkplace.dto";
 import { WorkplaceService } from "./workplace.service";
-import { IFindAllWorkplacesResponse } from "@task-manager/shared";
+import {
+  IFindAllWorkplacesResponse,
+  IFindOneWorkplaceResponse,
+} from "@task-manager/shared";
+import { JWTAuthGuard } from "@/auth/guards/jwt-auth.guard";
+import { AuthUser } from "@/auth/decorators/user.decorator";
+import { User } from "@/entities/user.entity";
+import { AddUserDto } from "./dtos/AddUser.dto";
 
+@UseGuards(JWTAuthGuard)
 @Controller("workplace")
 export class WorkplaceController {
   constructor(private workplaceService: WorkplaceService) {}
 
   @Get()
-  async findAll(): Promise<IFindAllWorkplacesResponse> {
-    const workplaces = await this.workplaceService.findAll();
+  async findAll(@AuthUser() user: User): Promise<IFindAllWorkplacesResponse> {
+    const workplaces = await this.workplaceService.findForUser(user);
     return { workplaces };
   }
 
-  @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number) {
-    const workplace = await this.workplaceService.findOne(id);
-    if (!workplace) {
-      throw new NotFoundException(`Workplace with ID ${id} not found.`);
-    }
-    return workplace;
+  @Get(":workplaceId")
+  async findOne(
+    @AuthUser() user: User,
+    @Param("workplaceId", ParseIntPipe) workplaceId: number,
+  ): Promise<IFindOneWorkplaceResponse> {
+    const workplaceDetails = await this.workplaceService.getWorkplaceDetails(
+      workplaceId,
+      user,
+    );
+    return workplaceDetails;
   }
 
   @Post()
-  async create(@Body() createWorkplaceDto: CreateWorkplaceDto) {
-    return this.workplaceService.create(createWorkplaceDto);
-  }
-
-  @Put(":id")
-  async update(
-    @Param("id", ParseIntPipe) id: number,
-    @Body() updateWorkplaceDto: UpdateWorkplaceDto,
+  async create(
+    @AuthUser() user: User,
+    @Body() createWorkplaceDto: CreateWorkplaceDto,
   ) {
-    const updatedWorkplace = await this.workplaceService.update(
-      id,
-      updateWorkplaceDto,
-    );
-    if (!updatedWorkplace) {
-      throw new NotFoundException(`Workplace with ID ${id} not found.`);
-    }
-    return updatedWorkplace;
+    return this.workplaceService.create(createWorkplaceDto, user);
   }
 
-  @Delete(":id")
-  async delete(@Param("id", ParseIntPipe) id: number) {
-    try {
-      await this.workplaceService.delete(id);
-    } catch (e) {
-      throw new NotFoundException(`Workplace with ID ${id} not found.`);
-    }
-    return {};
+  @Post(":workplaceId/user")
+  async addUser(
+    @AuthUser() user: User,
+    @Param("workplaceId", ParseIntPipe) workplaceId: number,
+    @Body() addUserDto: AddUserDto,
+  ) {
+    await this.workplaceService.addUser(workplaceId, addUserDto, user);
+  }
+
+  @Delete(":workplaceId/user/:userId")
+  async deleteUser(
+    @AuthUser() user: User,
+    @Param("workplaceId", ParseIntPipe) workplaceId: number,
+    @Param("userId", ParseIntPipe) userId: number,
+  ) {
+    await this.workplaceService.deleteUser(workplaceId, userId, user);
   }
 }

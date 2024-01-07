@@ -1,67 +1,175 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { Task } from "@/entities/task.entity";
-import { Repository } from "typeorm";
-import { ITask } from "@task-manager/shared";
-import { Workplace } from "@/entities/workplace.entity";
+import { IsNull, Repository } from "typeorm";
+import { CreateTaskDto } from "./dtos/CreateTask.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "@/entities/user.entity";
+import { UserWorkplace } from "@/entities/user-workplace.entity";
 
 @Injectable()
 export class TaskService {
   constructor(
-    @InjectRepository(Task) private taskRepository: Repository<Task>,
-    @InjectRepository(Workplace)
-    private workplaceRepository: Repository<Workplace>,
+    @InjectRepository(Task)
+    private taskRepository: Repository<Task>,
+    @InjectRepository(UserWorkplace)
+    private userWorkplaceRepository: Repository<UserWorkplace>,
   ) {}
 
-  findTasks() {
-    return this.taskRepository.find();
+  async findAvailableTasks(workplaceId: number, user: User) {
+    const userWorkplace = await this.userWorkplaceRepository.findOne({
+      where: {
+        user: { id: user.id },
+        workplace: { id: workplaceId },
+      },
+    });
+
+    if (!userWorkplace) {
+      throw new BadRequestException("User is not a member of this workplace");
+    }
+
+    return this.taskRepository.find({
+      where: {
+        workplace: { id: workplaceId },
+        status: "Open",
+        user: IsNull(),
+      },
+    });
   }
 
-  findTaskById(id: number) {
-    return this.taskRepository.findOne({ where: { id } });
+  async findActiveTasks(workplaceId: number, user: User) {
+    return this.taskRepository.find({
+      where: {
+        user: {
+          id: user.id,
+        },
+        workplace: { id: workplaceId },
+        status: "Open",
+      },
+    });
   }
 
-  async createTask(taskDetails: Omit<ITask, "id">) {
-    const newTask = this.taskRepository.create(taskDetails);
+  async findCompletedTasks(workplaceId: number, user: User) {
+    return this.taskRepository.find({
+      where: {
+        user: {
+          id: user.id,
+        },
+        workplace: { id: workplaceId },
+        status: "Completed",
+        payroll: IsNull(),
+      },
+    });
+  }
+
+  async findTaskById(taskId: number) {
+    return this.taskRepository.findOne({ where: { id: taskId } });
+  }
+
+  async createTask(workplaceId: number, dto: CreateTaskDto, user: User) {
+    const userWorkplace = await this.userWorkplaceRepository.findOne({
+      where: {
+        user: { id: user.id },
+        workplace: { id: workplaceId },
+      },
+      relations: ["role"],
+    });
+
+    if (userWorkplace?.role.name !== "Operator") {
+      throw new BadRequestException("User is not an operator");
+    }
+
+    const newTask = this.taskRepository.create({
+      name: dto.name,
+      description: dto.description,
+      price: dto.price,
+      status: "Open",
+      workplace: { id: workplaceId },
+    });
     await this.taskRepository.save(newTask);
+
     return newTask;
   }
 
-  async updateTask(
-    id: number,
-    updateTask: Partial<ITask>,
-  ): Promise<Task | null> {
-    await this.taskRepository.update(id, updateTask);
-    return this.taskRepository.findOne({ where: { id } });
-  }
+  async assignTask(taskId: number, user: User): Promise<Task> {
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: ["user", "workplace"],
+    });
 
-  async deleteTask(id: number): Promise<boolean> {
-    const task = await this.taskRepository.find({ where: { id } });
-    const status = task[0].status;
-    if (status === "open") {
-      return false;
+    if (!task) {
+      throw new NotFoundException("Task not found");
     }
-    await this.taskRepository.delete(id);
-    return true;
+    if (task.user) {
+      throw new BadRequestException("Task already assigned");
+    }
+
+    task.user = user;
+    return this.taskRepository.save(task);
   }
 
-  async assignWorkplace(taskId: number, workplaceId: number): Promise<Task> {
+  async completeTask(taskId: number, user: User): Promise<Task> {
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId, user: { id: user.id } },
+      relations: ["user"],
+    });
+
+    if (!task) {
+      throw new NotFoundException("Task not found");
+    }
+    if (task.status !== "Open") {
+      throw new BadRequestException("Task is not open");
+    }
+
+    task.status = "Completed";
+    return this.taskRepository.save(task);
+  }
+
+  async cancelTask(taskId: number, user: User): Promise<Task> {
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId, user: { id: user.id } },
+      relations: ["user"],
+    });
+
+    if (!task) {
+      throw new NotFoundException("Task not found");
+    }
+    if (task.status !== "Open") {
+      throw new BadRequestException("Task is not open");
+    }
+
+    task.user = null;
+    return this.taskRepository.save(task);
+  }
+
+  async deleteTask(taskId: number, user: User): Promise<void> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
       relations: ["workplace"],
     });
+
     if (!task) {
-      throw new HttpException("Task not found", HttpStatus.NOT_FOUND);
+      throw new NotFoundException("Task not found");
     }
 
-    const workplace = await this.workplaceRepository.findOne({
-      where: { id: workplaceId },
+    const userWorkplace = await this.userWorkplaceRepository.findOne({
+      where: {
+        user: { id: user.id },
+        workplace: { id: task.workplace.id },
+      },
+      relations: ["role"],
     });
-    if (!workplace) {
-      throw new HttpException("Workplace not found", HttpStatus.NOT_FOUND);
+
+    if (userWorkplace?.role.name !== "Operator") {
+      throw new BadRequestException("User is not an operator");
+    }
+    if (task?.status !== "Open") {
+      throw new BadRequestException("Task is not open");
     }
 
-    task.workplace = workplace;
-    return this.taskRepository.save(task);
+    await this.taskRepository.delete(taskId);
   }
 }
