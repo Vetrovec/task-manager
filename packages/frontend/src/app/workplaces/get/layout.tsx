@@ -1,11 +1,13 @@
 "use client";
 
+import Tile from "@/components/Tile";
 import { fetcher } from "@/helpers/fetcher";
 import { useSearchParamsSafe } from "@/hooks/useSearchParamsSafe";
 import {
   BanknotesIcon,
   BuildingOfficeIcon,
   ClipboardDocumentCheckIcon,
+  DocumentTextIcon,
   TableCellsIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
@@ -34,6 +36,11 @@ const menuItems = [
     href: "/workplaces/get/payroll",
     icon: BanknotesIcon,
   },
+  {
+    name: "Audit Log",
+    href: "/workplaces/get/log",
+    icon: DocumentTextIcon,
+  },
 ];
 
 export default function WorkplacesGetLayout({
@@ -54,7 +61,10 @@ export default function WorkplacesGetLayout({
 
   return (
     <div className="flex gap-4">
-      <div className="flex flex-col p-2 gap-2 bg-blue-500 rounded-xl text-white">
+      <Tile
+        variant="highlighted"
+        className="flex flex-col p-2 gap-2 text-white"
+      >
         {menuItems.map(({ href, icon: Icon, name }) => (
           <Link key={href} href={`${href}?id=${id}`}>
             <div className="flex p-2 flex-col justify-center items-center gap-2 rounded-lg aspect-square hover:bg-blue-600">
@@ -65,14 +75,14 @@ export default function WorkplacesGetLayout({
             </div>
           </Link>
         ))}
-      </div>
+      </Tile>
       <div className="flex-auto">
-        <div className="flex items-center gap-2 p-4 mb-4 bg-white rounded-xl">
+        <Tile className="flex items-center gap-2 p-4 mb-4">
           <div className="w-6">
             <BuildingOfficeIcon />
           </div>
           <div className="text-xl">{data?.workplace.name ?? "Workplace"}</div>
-        </div>
+        </Tile>
         <div>{children}</div>
       </div>
     </div>

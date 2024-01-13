@@ -1,10 +1,8 @@
 import { fetcher } from "@/helpers/fetcher";
-import {
-  IFindAllPayrollResponse,
-  IPreviewPayrollResponse,
-} from "@task-manager/shared";
-import { use, useEffect, useState } from "react";
+import { IPreviewPayrollResponse } from "@task-manager/shared";
 import useSWR from "swr";
+import Dialog from "./Dialog";
+import Button from "./Button";
 
 interface DialogCreateTaskProps {
   open: boolean;
@@ -27,13 +25,7 @@ export default function DialogCreatePayroll({
   );
 
   return (
-    <dialog
-      className="fixed top-1/2 left-1/2 p-8 m-0 border border-black rounded-xl -translate-x-1/2 -translate-y-1/2"
-      open={open}
-    >
-      <button className="absolute top-2 right-4 text-lg" onClick={onClose}>
-        &times;
-      </button>
+    <Dialog open={open} onClose={onClose}>
       <form
         className="w-96 flex flex-col gap-4"
         onSubmit={(e) => {
@@ -69,13 +61,10 @@ export default function DialogCreatePayroll({
             </table>
           ) : null}
         </div>
-        <button
-          className="w-full h-14 bg-black text-white rounded-lg disabled:opacity-50"
-          disabled={!data?.tasks.length}
-        >
-          Create
-        </button>
+        <Button size="lg" disabled={!data?.tasks.length}>
+          Create Payroll
+        </Button>
       </form>
-    </dialog>
+    </Dialog>
   );
 }

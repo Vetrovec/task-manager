@@ -21,9 +21,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { data, isLoading } = useSWR<IGetMeResponse>(
+  const { data, error, isLoading } = useSWR<IGetMeResponse>(
     "/api/v1/auth/me",
     fetcher,
+    {
+      shouldRetryOnError: false,
+    },
   );
 
   return (
@@ -34,7 +37,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ToastContainer position="bottom-right" />
-        {isLoading ? (
+        {isLoading && !data && !error ? (
           <Loading />
         ) : (
           <UserContext.Provider value={data ? { user: data.user } : null}>

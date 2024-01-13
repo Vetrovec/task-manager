@@ -4,6 +4,8 @@ import useSWRMutation from "swr/mutation";
 import { useUser } from "@/hooks/useUser";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
+import Tile from "@/components/Tile";
+import Button from "@/components/Button";
 
 async function logout(url: string) {
   try {
@@ -31,7 +33,7 @@ export default function WorkplacesLayout({
 
   return (
     <div className="h-full min-h-screen p-4 bg-slate-300">
-      <div className="flex w-full h-16 px-4 mb-4 justify-between items-center bg-white rounded-xl">
+      <Tile className="flex w-full h-16 px-4 mb-4 justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="w-8">
             <UserCircleIcon />
@@ -39,19 +41,14 @@ export default function WorkplacesLayout({
           <div className="text-xl">{user.displayName}</div>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/workplaces/list">
-            <div className="px-2 py-1 border bg-slate-200 hover:bg-slate-100 rounded-md text-sm">
-              Workplaces
-            </div>
-          </Link>
-          <button
-            className="px-2 py-1 border bg-slate-200 hover:bg-slate-100 rounded-md text-sm"
-            onClick={() => trigger()}
-          >
+          <Button as="link" variant="secondary" href="/workplaces/list">
+            Workplaces
+          </Button>
+          <Button variant="secondary" onClick={() => trigger()}>
             Logout
-          </button>
+          </Button>
         </div>
-      </div>
+      </Tile>
       <div>{children}</div>
     </div>
   );

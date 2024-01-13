@@ -24,7 +24,7 @@ export default function History() {
   return (
     <Tile>
       <div className="pb-2 border-b-2 mb-4">
-        <div className="font-semibold text-xl">Unpaid Tasks</div>
+        <div className="font-semibold text-lg">Unpaid Tasks</div>
       </div>
       <div className="mb-4">
         Here are all tasks that have not been paid by operator yet.

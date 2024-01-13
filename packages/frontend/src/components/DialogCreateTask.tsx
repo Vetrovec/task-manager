@@ -1,4 +1,6 @@
 import { use, useEffect, useState } from "react";
+import Dialog from "./Dialog";
+import Button from "./Button";
 
 interface DialogCreateTaskProps {
   open: boolean;
@@ -24,13 +26,7 @@ export default function DialogCreateTask({
   }, [open]);
 
   return (
-    <dialog
-      className="fixed top-1/2 left-1/2 p-8 m-0 border border-black rounded-xl -translate-x-1/2 -translate-y-1/2"
-      open={open}
-    >
-      <button className="absolute top-2 right-4 text-lg" onClick={onClose}>
-        &times;
-      </button>
+    <Dialog open={open} onClose={onClose}>
       <form
         className="w-96 flex flex-col gap-4"
         onSubmit={(e) => {
@@ -68,10 +64,8 @@ export default function DialogCreateTask({
             onChange={(e) => setPrice(e.target.valueAsNumber)}
           />
         </label>
-        <button className="w-full h-14 bg-black text-white rounded-lg">
-          Create
-        </button>
+        <Button size="lg">Create Task</Button>
       </form>
-    </dialog>
+    </Dialog>
   );
 }

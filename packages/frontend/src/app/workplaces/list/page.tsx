@@ -34,7 +34,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="flex flex-col gap-4">
       <dialog
         className="fixed top-1/2 left-1/2 p-8 m-0 border border-black rounded-xl -translate-x-1/2 -translate-y-1/2"
         open={showCreateWorkplace}
@@ -78,7 +78,8 @@ export default function Dashboard() {
           </button>
         </form>
       </dialog>
-      <div className="flex col-span-3 justify-between items-center p-4 bg-white rounded-xl">
+
+      <div className="flex justify-between items-center p-4 bg-white rounded-xl">
         <div className="flex items-center gap-2">
           <div className="w-6">
             <BuildingOffice2Icon />
@@ -89,30 +90,37 @@ export default function Dashboard() {
           + New Workplace
         </Button>
       </div>
+
       {!data?.workplaces.length && (
-        <div className="col-span-3 p-4 bg-white rounded-xl">
+        <div className="p-4 bg-white rounded-xl">
           <p className="text-center text-lg font-semibold">
             {isLoading ? "Loading..." : "You don't have any workplaces yet"}
           </p>
         </div>
       )}
-      {data?.workplaces.map((workplace) => (
-        <Link key={workplace.id} href={`/workplaces/get?id=${workplace.id}`}>
-          <div className="pb-8 bg-white rounded-xl overflow-hidden">
-            <div className="flex justify-between items-center px-4 py-2 bg-blue-500 text-white">
-              <div className="text-base font-medium">{workplace.name}</div>
-              <div className="w-6">
-                <ArrowRightEndOnRectangleIcon />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {data?.workplaces.map((workplace) => (
+          <div
+            key={workplace.id}
+            className="pb-8 bg-white rounded-xl overflow-hidden"
+          >
+            <Link href={`/workplaces/get?id=${workplace.id}`}>
+              <div className="flex justify-between items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white transition-colors">
+                <div className="text-base font-medium">{workplace.name}</div>
+                <div className="w-6">
+                  <ArrowRightEndOnRectangleIcon />
+                </div>
               </div>
-            </div>
+            </Link>
             <div className="px-4 py-2">
               <p className="text-sm font-medium text-gray-600">
                 {workplace.text}
               </p>
             </div>
           </div>
-        </Link>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

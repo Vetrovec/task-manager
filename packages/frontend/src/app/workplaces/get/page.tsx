@@ -90,7 +90,7 @@ export default function Workplace() {
               : "You currently don't have any active tasks"}
           </p>
         )}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {activeTasks?.map((task) => (
             <ActiveTaskTile
               key={task.id}
@@ -116,7 +116,7 @@ export default function Workplace() {
               : "There are currently no tasks available"}
           </p>
         )}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {availableTasks?.map((task) => (
             <AvailableTaskTile
               key={task.id}

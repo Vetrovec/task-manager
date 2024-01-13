@@ -1,9 +1,21 @@
 interface TileProps {
-  variant?: "nested" | "default";
+  className?: string;
+  variant?: "default" | "highlighted" | "nested";
   children?: React.ReactNode;
 }
 
-export default function Tile({ variant, children }: TileProps) {
-  const backgroundColor = variant === "nested" ? "bg-slate-100" : "bg-white";
-  return <div className={`p-4 rounded-xl ${backgroundColor}`}>{children}</div>;
+export default function Tile({ className, variant, children }: TileProps) {
+  const backgroundColor = {
+    default: "bg-white",
+    highlighted: "bg-blue-500",
+    nested: "bg-slate-100",
+  }[variant ?? "default"];
+
+  return (
+    <div
+      className={`p-4 rounded-xl shadow ${backgroundColor} ${className ?? ""}`}
+    >
+      {children}
+    </div>
+  );
 }

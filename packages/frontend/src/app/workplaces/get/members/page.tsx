@@ -87,7 +87,7 @@ export default function Workplace() {
             <Button onClick={() => setShowAddUser(true)}>+ Add Member</Button>
           )}
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {workplaceData?.users.map(({ user: target, role }) => {
             const isMe = target.id === user.id;
             return (
