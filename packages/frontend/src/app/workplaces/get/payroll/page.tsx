@@ -24,6 +24,9 @@ export default function Payroll() {
       <div className="pb-2 border-b-2 mb-4">
         <div className="font-semibold text-lg">Payroll List</div>
       </div>
+      <div className="mb-4">
+        Here are all payrolls that you have received from this workplace.
+      </div>
       {isLoading && <div>Loading...</div>}
       {data?.payrolls.length === 0 && <div>No payrolls</div>}
       {data?.payrolls.length ? (

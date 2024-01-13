@@ -6,4 +6,6 @@ export interface IAudit {
   createdAt: Date;
 }
 
-export type IGetAuditsResponse = IAudit[];
+export interface IGetAuditsResponse {
+  log: IAudit[];
+}

@@ -1,3 +1,4 @@
+import { IAudit } from "@task-manager/shared";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,7 +7,7 @@ import {
 } from "typeorm";
 
 @Entity()
-export class Audit {
+export class Audit implements IAudit {
   @PrimaryGeneratedColumn()
   id: number;
 

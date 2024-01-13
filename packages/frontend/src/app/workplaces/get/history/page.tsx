@@ -27,7 +27,8 @@ export default function History() {
         <div className="font-semibold text-lg">Unpaid Tasks</div>
       </div>
       <div className="mb-4">
-        Here are all tasks that have not been paid by operator yet.
+        Here are all your completed tasks that have not been paid by operator
+        yet.
       </div>
       <table className="w-full">
         <thead className="border-b-2">

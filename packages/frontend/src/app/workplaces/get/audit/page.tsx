@@ -19,7 +19,7 @@ export default function Audit() {
     fetcher,
   );
 
-  const sortedData = data?.sort((a, b) => {
+  const sortedAuditLog = data?.log?.sort((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
@@ -32,8 +32,8 @@ export default function Audit() {
         Here are all auditable actions that have occured in this workplace.
       </div>
       {isLoading && <div>Loading...</div>}
-      {sortedData?.length === 0 && <div>No auditable actions found.</div>}
-      {sortedData?.length ? (
+      {sortedAuditLog?.length === 0 && <div>No auditable actions found.</div>}
+      {sortedAuditLog?.length ? (
         <table className="w-full">
           <thead className="border-b-2">
             <tr>
@@ -55,7 +55,7 @@ export default function Audit() {
             </tr>
           </thead>
           <tbody>
-            {sortedData.map((audit) => (
+            {sortedAuditLog.map((audit) => (
               <tr key={audit.id}>
                 <td className="py-2">{audit.id}</td>
                 <td className="py-2">{audit.userId}</td>
