@@ -1,5 +1,6 @@
 "use client";
 
+import Spinner from "@/components/Spinner";
 import Tile from "@/components/Tile";
 import { fetcher } from "@/helpers/fetcher";
 import { useSearchParamsSafe } from "@/hooks/useSearchParamsSafe";
@@ -56,9 +57,12 @@ export default function WorkplacesGetLayout({
   );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Tile>
+        <Spinner />
+      </Tile>
+    );
   }
-
   return (
     <div className="flex gap-4">
       <Tile

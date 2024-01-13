@@ -7,7 +7,7 @@ import { Poppins } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import useSWR from "swr";
 import { IGetMeResponse } from "@task-manager/shared";
-import Loading from "@/components/Loading";
+import Spinner from "@/components/Spinner";
 import { UserContext } from "@/contexts/UserContext";
 import { fetcher } from "@/helpers/fetcher";
 
@@ -38,7 +38,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <ToastContainer position="bottom-right" />
         {isLoading && !data && !error ? (
-          <Loading />
+          <div className="h-screen flex justify-center items-center">
+            <Spinner />
+          </div>
         ) : (
           <UserContext.Provider value={data ? { user: data.user } : null}>
             {children}

@@ -11,6 +11,7 @@ import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import Link from "next/link";
 import Button from "@/components/Button";
+import Spinner from "@/components/Spinner";
 
 export default function Dashboard() {
   const { data, isLoading } = useSWR<IFindAllWorkplacesResponse>(
@@ -94,7 +95,7 @@ export default function Dashboard() {
       {!data?.workplaces.length && (
         <div className="p-4 bg-white rounded-xl">
           <p className="text-center text-lg font-semibold">
-            {isLoading ? "Loading..." : "You don't have any workplaces yet"}
+            {isLoading ? <Spinner /> : "You don't have any workplaces yet"}
           </p>
         </div>
       )}

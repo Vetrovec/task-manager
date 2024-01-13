@@ -25,11 +25,10 @@ export default function Workplace() {
     throw new Error("Missing workplace id");
   }
 
-  const { data: workplaceData, isLoading: isLoadingWorkplace } =
-    useSWR<IFindOneWorkplaceResponse>(
-      `/api/v1/workplace/${workplaceId}`,
-      fetcher,
-    );
+  const { data: workplaceData } = useSWR<IFindOneWorkplaceResponse>(
+    `/api/v1/workplace/${workplaceId}`,
+    fetcher,
+  );
 
   const currentWorkplaceUser = workplaceData?.users.find(
     (target) => target.user.id === user.id,
@@ -57,12 +56,7 @@ export default function Workplace() {
     ),
   );
 
-  const [showAddUser, setShowAddUser] = useState(false);
   const [showCreateTask, setShowCreateTask] = useState(false);
-
-  if (isLoadingWorkplace) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="flex flex-col gap-4">
