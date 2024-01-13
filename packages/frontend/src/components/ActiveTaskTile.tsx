@@ -30,13 +30,13 @@ export default function ActiveTaskTile({
 
   const { trigger: triggerCompleteTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task/${task.id}/complete`,
-    mutationFetcher("PATCH"),
+    mutationFetcher("PATCH", "Task completion"),
     mutationOptions,
   );
 
   const { trigger: triggerCancelTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task/${task.id}/cancel`,
-    mutationFetcher("PATCH"),
+    mutationFetcher("PATCH", "Task cancellation"),
     mutationOptions,
   );
 

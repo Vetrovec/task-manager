@@ -53,6 +53,7 @@ export default function Workplace() {
     `/api/v1/workplace/${workplaceId}/task`,
     mutationFetcher<{ name: string; description: string; price: number }>(
       "POST",
+      "Task creation",
     ),
   );
 

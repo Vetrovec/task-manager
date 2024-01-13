@@ -21,7 +21,10 @@ export default function Dashboard() {
 
   const { trigger } = useSWRMutation(
     "/api/v1/workplace",
-    mutationFetcher<{ name: string; text: string }>("POST"),
+    mutationFetcher<{ name: string; text: string }>(
+      "POST",
+      "Workplace creation",
+    ),
   );
 
   const [showCreateWorkplace, setShowCreateWorkplace] = useState(false);

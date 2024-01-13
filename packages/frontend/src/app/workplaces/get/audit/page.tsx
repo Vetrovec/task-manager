@@ -19,14 +19,21 @@ export default function Audit() {
     fetcher,
   );
 
+  const sortedData = data?.sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   return (
     <Tile>
       <div className="pb-2 border-b-2 mb-4">
         <div className="font-semibold text-lg">Audit Log</div>
       </div>
+      <div className="mb-4">
+        Here are all auditable actions that have occured in this workplace.
+      </div>
       {isLoading && <div>Loading...</div>}
-      {data?.length === 0 && <div>No auditable actions have occured yet.</div>}
-      {data?.length ? (
+      {sortedData?.length === 0 && <div>No auditable actions found.</div>}
+      {sortedData?.length ? (
         <table className="w-full">
           <thead className="border-b-2">
             <tr>
@@ -48,7 +55,7 @@ export default function Audit() {
             </tr>
           </thead>
           <tbody>
-            {data.map((audit) => (
+            {sortedData.map((audit) => (
               <tr key={audit.id}>
                 <td className="py-2">{audit.id}</td>
                 <td className="py-2">{audit.userId}</td>

@@ -10,7 +10,7 @@ import googleImage from "../google.png";
 export default function Login() {
   const { error, data, trigger } = useSWRMutation(
     "/api/v1/auth/login",
-    mutationFetcher<{ email: string; password: string }>("POST"),
+    mutationFetcher<{ email: string; password: string }>("POST", "Login"),
   );
 
   const [email, setEmail] = useState("");

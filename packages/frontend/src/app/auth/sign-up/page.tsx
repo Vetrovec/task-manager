@@ -12,6 +12,7 @@ export default function SignUp() {
     "/api/v1/auth/signup",
     mutationFetcher<{ email: string; displayName: string; password: string }>(
       "POST",
+      "Sign up",
     ),
   );
 

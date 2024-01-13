@@ -31,13 +31,13 @@ export default function ClaimableTaskTile({
   };
   const { trigger: triggerClaimTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task/${task.id}/claim`,
-    mutationFetcher("PATCH"),
+    mutationFetcher("PATCH", "Task claim"),
     mutationOptions,
   );
 
   const { trigger: triggerDelteTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task/${task.id}`,
-    mutationFetcher("DELETE"),
+    mutationFetcher("DELETE", "Task deletion"),
     mutationOptions,
   );
 

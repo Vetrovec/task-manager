@@ -1,7 +1,7 @@
 "use client";
 
-import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
+import "./globals.css";
 
 import { Poppins } from "next/font/google";
 import { ToastContainer } from "react-toastify";

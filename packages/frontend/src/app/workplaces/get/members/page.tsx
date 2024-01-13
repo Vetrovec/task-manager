@@ -37,12 +37,15 @@ export default function Workplace() {
 
   const { trigger: triggerAddUser } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/user`,
-    mutationFetcher<{ email: string; role: UserWorkplaceRole }>("POST"),
+    mutationFetcher<{ email: string; role: UserWorkplaceRole }>(
+      "POST",
+      "User addition",
+    ),
   );
 
   const { trigger: triggerPay } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/payroll`,
-    mutationFetcher<{ userId: number }>("POST"),
+    mutationFetcher<{ userId: number }>("POST", "Payroll creation"),
   );
 
   const [showAddUser, setShowAddUser] = useState(false);

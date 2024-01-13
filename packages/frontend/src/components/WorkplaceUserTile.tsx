@@ -24,9 +24,9 @@ export default function WorkplaceUserTile({
   workplaceId,
   onPayClick,
 }: WorkplaceUserTileProps) {
-  const { trigger: triggerDeleteTask } = useSWRMutation(
+  const { trigger: triggerRemoveUser } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/user/${user.id}`,
-    mutationFetcher("DELETE"),
+    mutationFetcher("DELETE", "User removal"),
   );
 
   return (
@@ -46,7 +46,7 @@ export default function WorkplaceUserTile({
             onPayClick();
             break;
           case "remove":
-            triggerDeleteTask();
+            triggerRemoveUser();
             break;
         }
       }}
