@@ -2,6 +2,7 @@
 
 import Tile from "@/components/Tile";
 import { fetcher } from "@/helpers/fetcher";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { IFindAllTasksResponse } from "@task-manager/shared";
 import { useSearchParams } from "next/navigation";
 import useSWR, { mutate } from "swr";
@@ -13,6 +14,8 @@ export default function History() {
   if (!workplaceId) {
     throw new Error("Missing workplace id");
   }
+
+  useDocumentTitle("Unpaid Tasks - Task Manager");
 
   const { data, isLoading } = useSWR<IFindAllTasksResponse>(
     `/api/v1/workplace/${workplaceId}/task/completed`,

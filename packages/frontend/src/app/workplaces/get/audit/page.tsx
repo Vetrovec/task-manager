@@ -2,6 +2,7 @@
 
 import Tile from "@/components/Tile";
 import { fetcher } from "@/helpers/fetcher";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { IGetAuditsResponse } from "@task-manager/shared";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
@@ -13,6 +14,8 @@ export default function Audit() {
   if (!workplaceId) {
     throw new Error("Missing workplace id");
   }
+
+  useDocumentTitle("Audit Log - Task Manager");
 
   const { data, isLoading } = useSWR<IGetAuditsResponse>(
     `/api/v1/audits/Workplace?entityId=${workplaceId}`,

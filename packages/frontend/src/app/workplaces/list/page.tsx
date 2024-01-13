@@ -13,12 +13,15 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import Spinner from "@/components/Spinner";
 import DialogCreateWorkspace from "@/components/DialogCreateWorkspace";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Dashboard() {
   const { data, isLoading } = useSWR<IFindAllWorkplacesResponse>(
     "/api/v1/workplace",
     fetcher,
   );
+
+  useDocumentTitle("Workplaces - Task Manager");
 
   const { trigger } = useSWRMutation(
     "/api/v1/workplace",

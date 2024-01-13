@@ -14,6 +14,7 @@ import AvailableTaskTile from "@/components/AvailableTaskTile";
 import DialogCreateTask from "@/components/DialogCreateTask";
 import { useUser } from "@/hooks/useUser";
 import Button from "@/components/Button";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Workplace() {
   const searchParams = useSearchParams();
@@ -24,6 +25,8 @@ export default function Workplace() {
   if (!workplaceId) {
     throw new Error("Missing workplace id");
   }
+
+  useDocumentTitle("Dashboard - Task Manager");
 
   const { data: workplaceData } = useSWR<IFindOneWorkplaceResponse>(
     `/api/v1/workplace/${workplaceId}`,

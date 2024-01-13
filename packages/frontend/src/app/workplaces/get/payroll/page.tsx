@@ -4,6 +4,7 @@ import Button from "@/components/Button";
 import DialogShowPayroll from "@/components/DialogShowPayroll";
 import Tile from "@/components/Tile";
 import { fetcher } from "@/helpers/fetcher";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { IFindAllPayrollResponse } from "@task-manager/shared";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -16,6 +17,8 @@ export default function Payroll() {
   if (!workplaceId) {
     throw new Error("Missing workplace id");
   }
+
+  useDocumentTitle("Payroll List - Task Manager");
 
   const [showPayrollId, setShowPayrollId] = useState<number | null>(null);
 
