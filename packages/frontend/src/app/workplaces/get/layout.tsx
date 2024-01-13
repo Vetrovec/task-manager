@@ -67,7 +67,7 @@ export default function WorkplacesGetLayout({
     <div className="flex gap-4">
       <Tile
         variant="highlighted"
-        className="flex flex-col p-2 gap-2 text-white"
+        className="flex flex-col flex-shrink-0 p-2 gap-2 text-white"
       >
         {menuItems.map(({ href, icon: Icon, name }) => (
           <Link key={href} href={`${href}?id=${id}`}>

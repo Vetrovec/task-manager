@@ -11,7 +11,9 @@ export default function TaskTile({ task, children, ...rest }: TaskTileProps) {
     <ActionTile {...rest}>
       <p className="text-lg font-semibold">{task.name}</p>
       <p className="text-sm font-medium text-gray-500">{task.description}</p>
-      <p className="text-xs font-medium text-gray-500">{task.price}</p>
+      <p className="mt-2 text-xs font-medium text-gray-500">
+        Price: {task.price}
+      </p>
     </ActionTile>
   );
 }

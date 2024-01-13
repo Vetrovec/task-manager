@@ -1,6 +1,6 @@
 "use client";
 
-import { fetcher, mutationFetcher } from "@/helpers/fetcher";
+import { addMutateOption, fetcher, mutationFetcher } from "@/helpers/fetcher";
 import {
   IFindOneWorkplaceResponse,
   UserWorkplaceRole,
@@ -41,11 +41,13 @@ export default function Workplace() {
       "POST",
       "User addition",
     ),
+    addMutateOption(/\/api\/v1\/workplace/),
   );
 
   const { trigger: triggerPay } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/payroll`,
     mutationFetcher<{ userId: number }>("POST", "Payroll creation"),
+    addMutateOption(/\/api\/v1\/workplace/),
   );
 
   const [showAddUser, setShowAddUser] = useState(false);

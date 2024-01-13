@@ -1,6 +1,6 @@
 "use client";
 
-import { fetcher, mutationFetcher } from "@/helpers/fetcher";
+import { addMutateOption, fetcher, mutationFetcher } from "@/helpers/fetcher";
 import {
   IFindAllTasksResponse,
   IFindOneWorkplaceResponse,
@@ -55,6 +55,7 @@ export default function Workplace() {
       "POST",
       "Task creation",
     ),
+    addMutateOption(/\/api\/v1\/workplace/),
   );
 
   const [showCreateTask, setShowCreateTask] = useState(false);
@@ -80,7 +81,7 @@ export default function Workplace() {
         </div>
         {!activeTasks?.length && (
           <p className="text-center">
-            {isLoadingAvailableTasks
+            {isLoadingActiveTasks
               ? "Loading..."
               : "You currently don't have any active tasks"}
           </p>

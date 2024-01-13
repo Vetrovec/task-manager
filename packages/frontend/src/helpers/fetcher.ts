@@ -1,4 +1,6 @@
 import { toast } from "react-toastify";
+import { mutate } from "swr";
+import { SWRMutationConfiguration } from "swr/mutation";
 
 export const fetcher = async (...args: Parameters<typeof fetch>) => {
   const response = await fetch(...args);
@@ -33,3 +35,16 @@ export const mutationFetcher =
 
     return { success };
   };
+
+export const addMutateOption = <T, U>(
+  regexp: RegExp,
+  options?: SWRMutationConfiguration<T, U>,
+): SWRMutationConfiguration<T, U> => ({
+  ...options,
+  onSuccess: (...args) => {
+    mutate((key) => typeof key === "string" && regexp.test(key), undefined, {
+      revalidate: true,
+    });
+    options?.onSuccess?.(...args);
+  },
+});

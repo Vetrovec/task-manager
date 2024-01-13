@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { fetcher, mutationFetcher } from "@/helpers/fetcher";
+import { addMutateOption, fetcher, mutationFetcher } from "@/helpers/fetcher";
 import { IFindAllWorkplacesResponse } from "@task-manager/shared";
 import {
   ArrowRightEndOnRectangleIcon,
@@ -12,6 +12,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Button from "@/components/Button";
 import Spinner from "@/components/Spinner";
+import DialogCreateWorkspace from "@/components/DialogCreateWorkspace";
 
 export default function Dashboard() {
   const { data, isLoading } = useSWR<IFindAllWorkplacesResponse>(
@@ -25,63 +26,21 @@ export default function Dashboard() {
       "POST",
       "Workplace creation",
     ),
+    addMutateOption(/\/api\/v1\/workplace/),
   );
 
   const [showCreateWorkplace, setShowCreateWorkplace] = useState(false);
-  const [name, setName] = useState("");
-  const [text, setText] = useState("");
-
-  const closeCreateWorkplace = () => {
-    setShowCreateWorkplace(false);
-    setName("");
-    setText("");
-  };
 
   return (
     <div className="flex flex-col gap-4">
-      <dialog
-        className="fixed top-1/2 left-1/2 p-8 m-0 border border-black rounded-xl -translate-x-1/2 -translate-y-1/2"
+      <DialogCreateWorkspace
         open={showCreateWorkplace}
-      >
-        <button
-          className="absolute top-2 right-4 text-lg"
-          onClick={closeCreateWorkplace}
-        >
-          &times;
-        </button>
-        <form
-          className="w-96 flex flex-col gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            trigger({ name, text });
-            closeCreateWorkplace();
-          }}
-        >
-          <label>
-            <div className="px-2">Name</div>
-            <input
-              className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
-              type="text"
-              placeholder="Enter a name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          <label>
-            <div className="px-2">Description</div>
-            <input
-              className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
-              type="text"
-              placeholder="Enter a description"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-            />
-          </label>
-          <button className="w-full h-14 bg-black text-white rounded-lg">
-            Create
-          </button>
-        </form>
-      </dialog>
+        onClose={() => setShowCreateWorkplace(false)}
+        onSubmit={({ name, text }) => {
+          setShowCreateWorkplace(false);
+          trigger({ name, text });
+        }}
+      />
 
       <div className="flex justify-between items-center p-4 bg-white rounded-xl">
         <div className="flex items-center gap-2">
