@@ -27,6 +27,7 @@ export class PayrollService {
         workplace: { id: workplaceId },
         beneficiary: { id: user.id },
       },
+      relations: ["createdBy"],
     });
 
     return payrolls;
@@ -38,7 +39,7 @@ export class PayrollService {
         id,
         beneficiary: { id: user.id },
       },
-      relations: ["tasks"],
+      relations: ["createdBy", "tasks"],
     });
 
     if (!payroll) {
