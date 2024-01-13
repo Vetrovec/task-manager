@@ -9,6 +9,10 @@ import { CreateTaskDto } from "./dtos/CreateTask.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "@/entities/user.entity";
 import { UserWorkplace } from "@/entities/user-workplace.entity";
+import { AuditService } from "../audit/audit.service";
+import { CreateAuditDto } from "../audit/dtos/CreateAudit.dto";
+import { ActionTypeEnum } from "../audit/ActionTypeEnum";
+import { EntityEnum } from "../audit/EntityEnum";
 
 @Injectable()
 export class TaskService {
@@ -17,6 +21,7 @@ export class TaskService {
     private taskRepository: Repository<Task>,
     @InjectRepository(UserWorkplace)
     private userWorkplaceRepository: Repository<UserWorkplace>,
+    private auditService: AuditService,
   ) {}
 
   async findAvailableTasks(workplaceId: number, user: User) {
@@ -91,6 +96,16 @@ export class TaskService {
     });
     await this.taskRepository.save(newTask);
 
+    const auditDto = new CreateAuditDto();
+    auditDto.userId = user.id;
+    auditDto.entity = EntityEnum.WORKPLACE;
+    auditDto.entityId = workplaceId;
+    auditDto.relations = { taskId: newTask.id };
+    auditDto.actionType = ActionTypeEnum.CREATE;
+    auditDto.description = `Task ${newTask.name} created`;
+    auditDto.data = newTask;
+    await this.auditService.createAuditRecord(auditDto);
+
     return newTask;
   }
 
@@ -108,13 +123,25 @@ export class TaskService {
     }
 
     task.user = user;
-    return this.taskRepository.save(task);
+    const res = await this.taskRepository.save(task);
+
+    const auditDto = new CreateAuditDto();
+    auditDto.userId = user.id;
+    auditDto.entity = EntityEnum.WORKPLACE;
+    auditDto.entityId = task.workplace.id;
+    auditDto.relations = { taskId: task.id };
+    auditDto.actionType = ActionTypeEnum.ASSIGN;
+    auditDto.description = `Task ${task.name} assigned to ${user.email}`;
+    auditDto.data = task;
+    await this.auditService.createAuditRecord(auditDto);
+
+    return res;
   }
 
   async completeTask(taskId: number, user: User): Promise<Task> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId, user: { id: user.id } },
-      relations: ["user"],
+      relations: ["user", "workplace"],
     });
 
     if (!task) {
@@ -125,13 +152,25 @@ export class TaskService {
     }
 
     task.status = "Completed";
-    return this.taskRepository.save(task);
+    const res = this.taskRepository.save(task);
+
+    const auditDto = new CreateAuditDto();
+    auditDto.userId = user.id;
+    auditDto.entity = EntityEnum.WORKPLACE;
+    auditDto.entityId = task.workplace.id;
+    auditDto.relations = { taskId: task.id };
+    auditDto.actionType = ActionTypeEnum.COMPLETE;
+    auditDto.description = `Task ${task.name} completed`;
+    auditDto.data = task;
+    await this.auditService.createAuditRecord(auditDto);
+
+    return res;
   }
 
   async cancelTask(taskId: number, user: User): Promise<Task> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId, user: { id: user.id } },
-      relations: ["user"],
+      relations: ["user", "workplace"],
     });
 
     if (!task) {
@@ -142,7 +181,18 @@ export class TaskService {
     }
 
     task.user = null;
-    return this.taskRepository.save(task);
+    const res = this.taskRepository.save(task);
+    const auditDto = new CreateAuditDto();
+    auditDto.userId = user.id;
+    auditDto.entity = EntityEnum.WORKPLACE;
+    auditDto.entityId = task.workplace.id;
+    auditDto.relations = { taskId: task.id };
+    auditDto.actionType = ActionTypeEnum.CANCEL;
+    auditDto.description = `Task ${task.name} cancelled`;
+    auditDto.data = task;
+    await this.auditService.createAuditRecord(auditDto);
+
+    return res;
   }
 
   async deleteTask(taskId: number, user: User): Promise<void> {
@@ -169,7 +219,15 @@ export class TaskService {
     if (task?.status !== "Open") {
       throw new BadRequestException("Task is not open");
     }
-
-    await this.taskRepository.delete(taskId);
+    const res = await this.taskRepository.delete({ id: taskId });
+    const auditDto = new CreateAuditDto();
+    auditDto.userId = user.id;
+    auditDto.entity = EntityEnum.WORKPLACE;
+    auditDto.entityId = task.workplace.id;
+    auditDto.relations = { taskId: task.id };
+    auditDto.actionType = ActionTypeEnum.DELETE;
+    auditDto.description = `Task ${task.name} deleted`;
+    auditDto.data = task;
+    await this.auditService.createAuditRecord(auditDto);
   }
 }
