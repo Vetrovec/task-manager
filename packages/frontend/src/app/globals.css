@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --toastify-color-success: #3b82f6;
+  --toastify-color-error: #ef4444;
+}
+
 html {
   height: 100%;
 }

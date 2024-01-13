@@ -2,14 +2,17 @@
 
 import { mutationFetcher } from "@/helpers/fetcher";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import useSWRMutation from "swr/mutation";
+import googleImage from "../google.png";
 
 export default function SignUp() {
   const { error, data, trigger } = useSWRMutation(
     "/api/v1/auth/signup",
     mutationFetcher<{ email: string; displayName: string; password: string }>(
       "POST",
+      "Sign up",
     ),
   );
 
@@ -27,10 +30,11 @@ export default function SignUp() {
   return (
     <>
       <Link
-        className="flex justify-center items-center h-14 border bg-white border-black rounded-full"
+        className="flex justify-center items-center gap-2 h-14 border bg-white border-black rounded-full"
         href="/api/v1/auth/google"
       >
-        Sign up with Google
+        <Image width={22} height={22} src={googleImage} alt="Google" />
+        <span>Sign up with Google</span>
       </Link>
       <form
         className="flex flex-col my-8 gap-4"

@@ -1,6 +1,6 @@
 "use client";
 
-import { fetcher, mutationFetcher } from "@/helpers/fetcher";
+import { addMutateOption, fetcher, mutationFetcher } from "@/helpers/fetcher";
 import {
   IFindAllTasksResponse,
   IFindOneWorkplaceResponse,
@@ -14,6 +14,7 @@ import AvailableTaskTile from "@/components/AvailableTaskTile";
 import DialogCreateTask from "@/components/DialogCreateTask";
 import { useUser } from "@/hooks/useUser";
 import Button from "@/components/Button";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Workplace() {
   const searchParams = useSearchParams();
@@ -25,11 +26,12 @@ export default function Workplace() {
     throw new Error("Missing workplace id");
   }
 
-  const { data: workplaceData, isLoading: isLoadingWorkplace } =
-    useSWR<IFindOneWorkplaceResponse>(
-      `/api/v1/workplace/${workplaceId}`,
-      fetcher,
-    );
+  useDocumentTitle("Dashboard - Task Manager");
+
+  const { data: workplaceData } = useSWR<IFindOneWorkplaceResponse>(
+    `/api/v1/workplace/${workplaceId}`,
+    fetcher,
+  );
 
   const currentWorkplaceUser = workplaceData?.users.find(
     (target) => target.user.id === user.id,
@@ -54,15 +56,12 @@ export default function Workplace() {
     `/api/v1/workplace/${workplaceId}/task`,
     mutationFetcher<{ name: string; description: string; price: number }>(
       "POST",
+      "Task creation",
     ),
+    addMutateOption(/\/api\/v1\/workplace/),
   );
 
-  const [showAddUser, setShowAddUser] = useState(false);
   const [showCreateTask, setShowCreateTask] = useState(false);
-
-  if (isLoadingWorkplace) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -85,12 +84,12 @@ export default function Workplace() {
         </div>
         {!activeTasks?.length && (
           <p className="text-center">
-            {isLoadingAvailableTasks
+            {isLoadingActiveTasks
               ? "Loading..."
               : "You currently don't have any active tasks"}
           </p>
         )}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {activeTasks?.map((task) => (
             <ActiveTaskTile
               key={task.id}
@@ -116,7 +115,7 @@ export default function Workplace() {
               : "There are currently no tasks available"}
           </p>
         )}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {availableTasks?.map((task) => (
             <AvailableTaskTile
               key={task.id}

@@ -1,4 +1,5 @@
 export * from "./app.types";
+export * from "./audit.types";
 export * from "./auth.types";
 export * from "./enums.types";
 export * from "./payroll.types";

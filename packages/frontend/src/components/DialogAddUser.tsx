@@ -1,5 +1,8 @@
 import { UserWorkplaceRole } from "@task-manager/shared";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import Dialog from "./Dialog";
+import Button from "./Button";
+import Input from "./Input";
 
 interface DialogAddUserProps {
   open: boolean;
@@ -23,13 +26,7 @@ export default function DialogAddUser({
   }, [open]);
 
   return (
-    <dialog
-      className="fixed top-1/2 left-1/2 p-8 m-0 border border-black rounded-xl -translate-x-1/2 -translate-y-1/2"
-      open={open}
-    >
-      <button className="absolute top-2 right-4 text-lg" onClick={onClose}>
-        &times;
-      </button>
+    <Dialog onClose={onClose} open={open}>
       <form
         className="w-96 flex flex-col gap-4"
         onSubmit={(e) => {
@@ -39,8 +36,8 @@ export default function DialogAddUser({
       >
         <label>
           <div className="px-2">Email</div>
-          <input
-            className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
+          <Input
+            className="w-full"
             type="email"
             placeholder="Enter an email"
             value={email}
@@ -50,7 +47,7 @@ export default function DialogAddUser({
         <label>
           <div className="px-2">Role</div>
           <select
-            className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
+            className="w-full h-10 px-2 border border-gray-300 rounded-lg focus:outline-none"
             value={role}
             onChange={(e) => setRole(e.target.value as UserWorkplaceRole)}
           >
@@ -58,10 +55,8 @@ export default function DialogAddUser({
             <option value="Operator">Operator</option>
           </select>
         </label>
-        <button className="w-full h-14 bg-black text-white rounded-lg">
-          Add
-        </button>
+        <Button size="lg">Add Member</Button>
       </form>
-    </dialog>
+    </Dialog>
   );
 }

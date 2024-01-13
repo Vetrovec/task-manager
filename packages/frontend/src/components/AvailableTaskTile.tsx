@@ -1,8 +1,7 @@
 import { ITask } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import TaskTile from "./TaskTile";
-import { mutationFetcher } from "../helpers/fetcher";
-import { mutate } from "swr";
+import { addMutateOption, mutationFetcher } from "../helpers/fetcher";
 
 interface ClaimableTaskTileProps {
   variant?: "nested" | "default";
@@ -17,28 +16,16 @@ export default function ClaimableTaskTile({
   workplaceId,
   canDelete,
 }: ClaimableTaskTileProps) {
-  const mutationOptions = {
-    onSuccess: () =>
-      mutate(
-        (key) =>
-          typeof key === "string" &&
-          /\/api\/v1\/workplace\/.*?\/task/.test(key),
-        undefined,
-        {
-          revalidate: true,
-        },
-      ),
-  };
   const { trigger: triggerClaimTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task/${task.id}/claim`,
-    mutationFetcher("PATCH"),
-    mutationOptions,
+    mutationFetcher("PATCH", "Task claim"),
+    addMutateOption(/\/api\/v1\/workplace\/.*?\/task/),
   );
 
   const { trigger: triggerDelteTask } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/task/${task.id}`,
-    mutationFetcher("DELETE"),
-    mutationOptions,
+    mutationFetcher("DELETE", "Task deletion"),
+    addMutateOption(/\/api\/v1\/workplace\/.*?\/task/),
   );
 
   return (

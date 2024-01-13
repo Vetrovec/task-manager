@@ -219,7 +219,9 @@ export class TaskService {
     if (task?.status !== "Open") {
       throw new BadRequestException("Task is not open");
     }
-    const res = await this.taskRepository.delete({ id: taskId });
+
+    await this.taskRepository.delete({ id: taskId });
+
     const auditDto = new CreateAuditDto();
     auditDto.userId = user.id;
     auditDto.entity = EntityEnum.WORKPLACE;

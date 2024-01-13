@@ -1,4 +1,3 @@
-import Tile from "@/components/Tile";
 import { IUser, UserWorkplaceRole } from "@task-manager/shared";
 import useSWRMutation from "swr/mutation";
 import { mutationFetcher } from "../helpers/fetcher";
@@ -12,6 +11,7 @@ interface WorkplaceUserTileProps {
   role: UserWorkplaceRole;
   user: IUser;
   workplaceId: string;
+  onPayClick: () => void;
 }
 
 export default function WorkplaceUserTile({
@@ -22,15 +22,11 @@ export default function WorkplaceUserTile({
   role,
   user,
   workplaceId,
+  onPayClick,
 }: WorkplaceUserTileProps) {
-  const { trigger: triggerDeleteTask } = useSWRMutation(
+  const { trigger: triggerRemoveUser } = useSWRMutation(
     `/api/v1/workplace/${workplaceId}/user/${user.id}`,
-    mutationFetcher("DELETE"),
-  );
-
-  const { trigger: triggerPay } = useSWRMutation(
-    `/api/v1/workplace/${workplaceId}/payroll`,
-    mutationFetcher<{ userId: number }>("POST"),
+    mutationFetcher("DELETE", "User removal"),
   );
 
   return (
@@ -47,10 +43,10 @@ export default function WorkplaceUserTile({
       onAction={(actionId) => {
         switch (actionId) {
           case "pay":
-            triggerPay({ userId: user.id });
+            onPayClick();
             break;
           case "remove":
-            triggerDeleteTask();
+            triggerRemoveUser();
             break;
         }
       }}

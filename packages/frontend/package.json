@@ -9,6 +9,7 @@
     "format": "prettier --write \"app/**/*.{ts,tsx}\""
   },
   "dependencies": {
+    "@heroicons/react": "^2.1.1",
     "@task-manager/shared": "*",
     "next": "14.0.0",
     "react": "^18",
