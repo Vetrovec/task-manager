@@ -39,7 +39,7 @@ const menuItems = [
   },
   {
     name: "Audit Log",
-    href: "/workplaces/get/log",
+    href: "/workplaces/get/audit",
     icon: DocumentTextIcon,
   },
 ];

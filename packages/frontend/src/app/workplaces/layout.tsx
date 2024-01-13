@@ -3,7 +3,6 @@
 import useSWRMutation from "swr/mutation";
 import { useUser } from "@/hooks/useUser";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
-import Link from "next/link";
 import Tile from "@/components/Tile";
 import Button from "@/components/Button";
 
