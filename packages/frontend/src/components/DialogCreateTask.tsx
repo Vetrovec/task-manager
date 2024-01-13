@@ -1,6 +1,7 @@
 import { use, useEffect, useState } from "react";
 import Dialog from "./Dialog";
 import Button from "./Button";
+import Input from "./Input";
 
 interface DialogCreateTaskProps {
   open: boolean;
@@ -15,13 +16,13 @@ export default function DialogCreateTask({
 }: DialogCreateTaskProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState(1);
 
   useEffect(() => {
     if (open) {
       setName("");
       setDescription("");
-      setPrice(0);
+      setPrice(1);
     }
   }, [open]);
 
@@ -36,8 +37,8 @@ export default function DialogCreateTask({
       >
         <label>
           <div className="px-2">Name</div>
-          <input
-            className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
+          <Input
+            className="w-full"
             type="text"
             placeholder="Enter a name"
             value={name}
@@ -46,8 +47,8 @@ export default function DialogCreateTask({
         </label>
         <label>
           <div className="px-2">Description</div>
-          <input
-            className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
+          <Input
+            className="w-full"
             type="text"
             placeholder="Enter a description"
             value={description}
@@ -56,9 +57,10 @@ export default function DialogCreateTask({
         </label>
         <label>
           <div className="px-2">Price</div>
-          <input
-            className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
+          <Input
+            className="w-full"
             type="number"
+            min={1}
             placeholder="Enter a price"
             value={price}
             onChange={(e) => setPrice(e.target.valueAsNumber)}

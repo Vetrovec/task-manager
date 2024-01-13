@@ -35,7 +35,9 @@ export default function DialogCreatePayroll({
       >
         <div>
           {isLoading && <div>Loading...</div>}
-          {data?.tasks.length === 0 && <div>No tasks</div>}
+          {data?.tasks.length === 0 && (
+            <div>There are currently no completed tasks by this member.</div>
+          )}
           {data?.tasks.length ? (
             <table className="w-full">
               <thead className="border-b-2">

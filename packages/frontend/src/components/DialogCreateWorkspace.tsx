@@ -1,6 +1,7 @@
 import { use, useEffect, useState } from "react";
 import Dialog from "./Dialog";
 import Button from "./Button";
+import Input from "./Input";
 
 interface DialogCreateTaskProps {
   open: boolean;
@@ -34,8 +35,8 @@ export default function DialogCreateWorkspace({
       >
         <label>
           <div className="px-2">Name</div>
-          <input
-            className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
+          <Input
+            className="w-full"
             type="text"
             placeholder="Enter a name"
             value={name}
@@ -44,8 +45,8 @@ export default function DialogCreateWorkspace({
         </label>
         <label>
           <div className="px-2">Description</div>
-          <input
-            className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
+          <Input
+            className="w-full"
             type="text"
             placeholder="Enter a description"
             value={text}

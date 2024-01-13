@@ -1,7 +1,8 @@
 import { UserWorkplaceRole } from "@task-manager/shared";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Dialog from "./Dialog";
 import Button from "./Button";
+import Input from "./Input";
 
 interface DialogAddUserProps {
   open: boolean;
@@ -35,8 +36,8 @@ export default function DialogAddUser({
       >
         <label>
           <div className="px-2">Email</div>
-          <input
-            className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
+          <Input
+            className="w-full"
             type="email"
             placeholder="Enter an email"
             value={email}
@@ -46,7 +47,7 @@ export default function DialogAddUser({
         <label>
           <div className="px-2">Role</div>
           <select
-            className="w-full h-14 px-2 border border-gray-300 rounded-lg focus:outline-none"
+            className="w-full h-10 px-2 border border-gray-300 rounded-lg focus:outline-none"
             value={role}
             onChange={(e) => setRole(e.target.value as UserWorkplaceRole)}
           >
