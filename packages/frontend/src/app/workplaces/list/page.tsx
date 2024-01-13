@@ -3,6 +3,10 @@
 import useSWR from "swr";
 import { fetcher, mutationFetcher } from "@/helpers/fetcher";
 import { IFindAllWorkplacesResponse } from "@task-manager/shared";
+import {
+  ArrowRightEndOnRectangleIcon,
+  BuildingOffice2Icon,
+} from "@heroicons/react/24/outline";
 import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import Link from "next/link";
@@ -74,7 +78,13 @@ export default function Dashboard() {
           </button>
         </form>
       </dialog>
-      <div className="flex col-span-3 justify-end p-4 bg-white rounded-xl">
+      <div className="flex col-span-3 justify-between items-center p-4 bg-white rounded-xl">
+        <div className="flex items-center gap-2">
+          <div className="w-6">
+            <BuildingOffice2Icon />
+          </div>
+          <div className="text-xl">Workplaces</div>
+        </div>
         <Button onClick={() => setShowCreateWorkplace(true)}>
           + New Workplace
         </Button>
@@ -88,11 +98,18 @@ export default function Dashboard() {
       )}
       {data?.workplaces.map((workplace) => (
         <Link key={workplace.id} href={`/workplaces/get?id=${workplace.id}`}>
-          <div className="p-4 bg-white rounded-xl">
-            <p className="text-lg font-semibold">{workplace.name}</p>
-            <p className="text-sm font-medium text-gray-500">
-              {workplace.text}
-            </p>
+          <div className="pb-8 bg-white rounded-xl overflow-hidden">
+            <div className="flex justify-between items-center px-4 py-2 bg-blue-500 text-white">
+              <div className="text-base font-medium">{workplace.name}</div>
+              <div className="w-6">
+                <ArrowRightEndOnRectangleIcon />
+              </div>
+            </div>
+            <div className="px-4 py-2">
+              <p className="text-sm font-medium text-gray-600">
+                {workplace.text}
+              </p>
+            </div>
           </div>
         </Link>
       ))}

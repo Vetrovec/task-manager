@@ -2,6 +2,7 @@
 
 import useSWRMutation from "swr/mutation";
 import { useUser } from "@/hooks/useUser";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 async function logout(url: string) {
@@ -31,12 +32,22 @@ export default function WorkplacesLayout({
   return (
     <div className="h-full min-h-screen p-4 bg-slate-300">
       <div className="flex w-full h-16 px-4 mb-4 justify-between items-center bg-white rounded-xl">
-        <div className="text-xl">{user.displayName}</div>
+        <div className="flex items-center gap-2">
+          <div className="w-8">
+            <UserCircleIcon />
+          </div>
+          <div className="text-xl">{user.displayName}</div>
+        </div>
         <div className="flex items-center gap-4">
           <Link href="/workplaces/list">
-            <div className="text-sm">Workplaces</div>
+            <div className="px-2 py-1 border bg-slate-200 hover:bg-slate-100 rounded-md text-sm">
+              Workplaces
+            </div>
           </Link>
-          <button className="text-sm" onClick={() => trigger()}>
+          <button
+            className="px-2 py-1 border bg-slate-200 hover:bg-slate-100 rounded-md text-sm"
+            onClick={() => trigger()}
+          >
             Logout
           </button>
         </div>
