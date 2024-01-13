@@ -13,6 +13,7 @@ import DialogAddUser from "@/components/DialogAddUser";
 import WorkplaceUserTile from "@/components/WorkplaceUserTile";
 import { useUser } from "@/hooks/useUser";
 import Button from "@/components/Button";
+import DialogCreatePayroll from "@/components/DialogCreatePayroll";
 
 export default function Workplace() {
   const searchParams = useSearchParams();
@@ -40,7 +41,13 @@ export default function Workplace() {
     mutationFetcher<{ email: string; role: UserWorkplaceRole }>("POST"),
   );
 
+  const { trigger: triggerPay } = useSWRMutation(
+    `/api/v1/workplace/${workplaceId}/payroll`,
+    mutationFetcher<{ userId: number }>("POST"),
+  );
+
   const [showAddUser, setShowAddUser] = useState(false);
+  const [showPayrollFor, setShowPayrollFor] = useState<number | null>(null);
 
   if (isLoadingWorkplace) {
     return <div>Loading...</div>;
@@ -59,6 +66,19 @@ export default function Workplace() {
           });
         }}
       />
+
+      {showPayrollFor && (
+        <DialogCreatePayroll
+          open
+          userId={showPayrollFor.toString()}
+          workplaceId={workplaceId}
+          onClose={() => setShowPayrollFor(null)}
+          onSubmit={() => {
+            setShowPayrollFor(null);
+            triggerPay({ userId: showPayrollFor! });
+          }}
+        />
+      )}
 
       <div className="p-4 bg-white rounded-xl">
         <div className="flex justify-between pb-2 border-b-2 mb-4">
@@ -80,6 +100,7 @@ export default function Workplace() {
                 role={role}
                 user={target}
                 workplaceId={workplaceId}
+                onPayClick={() => setShowPayrollFor(target.id)}
               />
             );
           })}

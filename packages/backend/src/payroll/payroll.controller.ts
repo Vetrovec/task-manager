@@ -6,11 +6,13 @@ import {
   ParseIntPipe,
   UseGuards,
   Get,
+  Query,
 } from "@nestjs/common";
 import {
   ICreatePayrollResponse,
   IFindAllPayrollResponse,
   IFindOnePayrollResponse,
+  IPreviewPayrollResponse,
 } from "@task-manager/shared";
 import { PayrollService } from "./payroll.service";
 import { CreatePayrollDto } from "./dtos/CreatePayroll.dto";
@@ -35,6 +37,23 @@ export class PayrollController {
 
     return {
       payrolls,
+    };
+  }
+
+  @Get("preview")
+  async previewPayroll(
+    @AuthUser() user: User,
+    @Param("workplaceId", ParseIntPipe) workplaceId: number,
+    @Query("userId", ParseIntPipe) userId: number,
+  ): Promise<IPreviewPayrollResponse> {
+    const tasks = await this.payrollService.previewPayroll(
+      workplaceId,
+      userId,
+      user,
+    );
+
+    return {
+      tasks,
     };
   }
 

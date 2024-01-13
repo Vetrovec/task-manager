@@ -18,6 +18,10 @@ export interface IFindOnePayrollResponse {
   tasks: ITask[];
 }
 
+export interface IPreviewPayrollResponse {
+  tasks: ITask[];
+}
+
 export interface ICreatePayrollResponse {
   payroll: IPayroll;
   tasks: ITask[];

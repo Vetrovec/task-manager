@@ -48,6 +48,36 @@ export class PayrollService {
     return payroll;
   }
 
+  async previewPayroll(
+    workplaceId: number,
+    userId: number,
+    user: User,
+  ): Promise<Task[]> {
+    const userWorkplace = await this.userWorkplaceRepository.findOne({
+      where: {
+        workplace: {
+          id: workplaceId,
+        },
+        user: {
+          id: user.id,
+        },
+      },
+      relations: ["role"],
+    });
+    if (userWorkplace?.role.name !== "Operator") {
+      throw new BadRequestException("User is not an operator");
+    }
+
+    const tasks = await this.taskRepository.find({
+      where: {
+        user: { id: userId },
+        status: "Completed",
+        payroll: IsNull(),
+      },
+    });
+    return tasks;
+  }
+
   async createPayroll(
     workplaceId: number,
     dto: CreatePayrollDto,

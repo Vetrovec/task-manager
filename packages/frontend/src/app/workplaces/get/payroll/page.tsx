@@ -2,10 +2,7 @@
 
 import Tile from "@/components/Tile";
 import { fetcher } from "@/helpers/fetcher";
-import {
-  IFindAllPayrollResponse,
-  IFindAllTasksResponse,
-} from "@task-manager/shared";
+import { IFindAllPayrollResponse } from "@task-manager/shared";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 
@@ -21,8 +18,6 @@ export default function Payroll() {
     `/api/v1/workplace/${workplaceId}/payroll`,
     fetcher,
   );
-
-  console.log(data);
 
   return (
     <Tile>
