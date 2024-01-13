@@ -10,6 +10,7 @@ import { UserModule } from "./user/user.module";
 import { WorkplaceModule } from "./workplace/workplace.module";
 import appConfig from "./config/app.config";
 import { PayrollModule } from "./payroll/payroll.module";
+import { AuditModule } from "./audit/audit.modules";
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { PayrollModule } from "./payroll/payroll.module";
     TaskModule,
     UserModule,
     WorkplaceModule,
+    AuditModule,
   ],
   controllers: [AppController],
   providers: [AppService],
